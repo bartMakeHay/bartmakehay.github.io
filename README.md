@@ -10,3 +10,17 @@ Content-workflow (distillatie/anonimisatie vanuit werkmateriaal) leeft in de apa
 npm install
 npm run dev
 ```
+
+## Comments (Giscus)
+
+`src/components/Comments.astro` bevat het kant-en-klare Giscus-script (repo, repo-id en category-id al ingevuld, GitHub Discussions staat aan met de `Announcements`-categorie). Importeer en plaats het onderaan elke posttemplate zodra die bestaat:
+
+```astro
+---
+import Comments from '../components/Comments.astro';
+---
+...
+<Comments />
+```
+
+Vereist eenmalig: de [giscus GitHub App](https://github.com/apps/giscus) geïnstalleerd op deze repo.
