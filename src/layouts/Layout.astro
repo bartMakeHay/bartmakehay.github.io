@@ -14,15 +14,18 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 		<title>{title}</title>
 	</head>
-	<body class="min-h-screen flex flex-col bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+	<body class="min-h-screen flex flex-col bg-paper text-ink font-sans antialiased">
 		<div class="flex-1">
 			<slot />
 		</div>
-		<footer class="mx-auto w-full max-w-2xl px-4 py-8 text-sm text-gray-500 dark:text-gray-400">
+		<footer class="mx-auto w-full max-w-2xl border-t border-border px-4 py-6 text-sm text-muted">
 			<p>
-				Geschreven door Bart Du Bois, oprichter van <a href="https://www.makehay.be" class="underline hover:text-gray-900 dark:hover:text-gray-100">Make Hay BV</a>.
+				Geschreven door Bart Du Bois, oprichter van <a href="https://www.makehay.be" class="text-accent hover:text-accent-hover">Make Hay BV</a>.
 			</p>
 		</footer>
 	</body>

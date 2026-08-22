@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+	--font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+
+	--color-paper: oklch(98.8% 0.004 75);
+	--color-card: oklch(99.5% 0.002 75);
+	--color-ink: oklch(20% 0.005 60);
+	--color-muted: oklch(42% 0.01 60);
+	--color-border: oklch(90% 0.005 70);
+	--color-accent: oklch(56% 0.13 45);
+	--color-accent-hover: oklch(46% 0.14 42);
+}
