@@ -1,0 +1,57 @@
+---
+interface Props {
+	src: string;
+	alt: string;
+}
+
+const { src, alt } = Astro.props;
+const dialogId = `zoom-${src.replace(/[^a-zA-Z0-9]/g, '-')}`;
+---
+
+<button type="button" class="zoomable-trigger block w-full cursor-zoom-in border-0 bg-transparent p-0" data-dialog={dialogId} aria-label={`Enlarge: ${alt}`}>
+	<img src={src} alt={alt} class="w-full" />
+</button>
+
+<dialog id={dialogId} class="zoomable-dialog">
+	<img src={src} alt={alt} />
+</dialog>
+
+<style>
+	.zoomable-dialog {
+		max-width: 95vw;
+		max-height: 95vh;
+		padding: 0;
+		border: none;
+		background: transparent;
+	}
+	.zoomable-dialog::backdrop {
+		background: rgb(20 18 15 / 0.7);
+	}
+	.zoomable-dialog img {
+		display: block;
+		max-width: 95vw;
+		max-height: 95vh;
+		width: auto;
+		height: auto;
+		background: white;
+		cursor: zoom-out;
+	}
+</style>
+
+<script>
+	document.addEventListener('click', (e) => {
+		const target = e.target as HTMLElement;
+
+		const trigger = target.closest('.zoomable-trigger') as HTMLElement | null;
+		if (trigger) {
+			const dialog = document.getElementById(trigger.dataset.dialog!) as HTMLDialogElement | null;
+			dialog?.showModal();
+			return;
+		}
+
+		const dialog = target.closest('dialog.zoomable-dialog') as HTMLDialogElement | null;
+		if (dialog && (target === dialog || target.tagName === 'IMG')) {
+			dialog.close();
+		}
+	});
+</script>

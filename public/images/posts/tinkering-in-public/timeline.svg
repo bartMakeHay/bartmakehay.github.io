@@ -1,0 +1,30 @@
+<svg viewBox="0 0 950 190" width="950" height="190" xmlns="http://www.w3.org/2000/svg" font-family="'Work Sans', 'Segoe UI', Arial, sans-serif">
+  <!-- baseline -->
+  <line x1="80" y1="120" x2="820" y2="120" stroke="#D3D1C7" stroke-width="2"/>
+
+  <!-- 2002 -->
+  <circle cx="80" cy="120" r="9" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+  <text x="80" y="90" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2A28">2002</text>
+  <text x="80" y="150" text-anchor="middle" font-size="14" fill="#4A4744">started as IT architect</text>
+
+  <!-- 2011 -->
+  <circle cx="265" cy="120" r="9" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+  <text x="265" y="90" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2A28">2011</text>
+  <text x="265" y="150" text-anchor="middle" font-size="14" fill="#4A4744">began applying ArchiMate</text>
+
+  <!-- 2014 -->
+  <circle cx="450" cy="120" r="9" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+  <text x="450" y="90" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2A28">2014</text>
+  <text x="450" y="150" text-anchor="middle" font-size="14" fill="#4A4744">freelancer</text>
+
+  <!-- 2024 -->
+  <circle cx="635" cy="120" r="9" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+  <text x="635" y="90" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2A28">2024</text>
+  <text x="635" y="150" text-anchor="middle" font-size="14" fill="#4A4744">System Architect &amp; PO</text>
+
+  <!-- 2026 - highlighted -->
+  <circle cx="820" cy="120" r="10" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+  <circle cx="820" cy="120" r="16" fill="none" stroke="#D85A30" stroke-width="1.5"/>
+  <text x="820" y="90" text-anchor="middle" font-size="20" font-weight="700" fill="#2B2A28">2026</text>
+  <text x="820" y="150" text-anchor="middle" font-size="14" fill="#4A4744">AI boost becomes tangible</text>
+</svg>

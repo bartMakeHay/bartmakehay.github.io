@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts')).sort(
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
 ---
 
 <Layout title="bartmakehay">
@@ -7,9 +12,22 @@ import Layout from '../layouts/Layout.astro';
 		<h1 class="text-lg font-bold">bartmakehay</h1>
 	</header>
 	<main class="mx-auto max-w-2xl px-4 py-8">
-		<p class="text-xs font-semibold tracking-wide text-accent uppercase">Persoonlijke blog</p>
-		<p class="mt-3 max-w-[40ch] text-sm text-muted">
-			Blog in opbouw — Astro + Tailwind, gedeployed via GitHub Actions naar GitHub Pages.
-		</p>
+		<p class="text-xs font-semibold tracking-wide text-accent uppercase">Personal blog</p>
+		<p class="mt-3 max-w-[40ch] text-sm text-muted">Blog in progress</p>
+		<ul class="mt-8 space-y-6">
+			{posts.map((post) => (
+				<li>
+					<a href={`/posts/${post.id}/`} class="text-base font-semibold text-ink hover:text-accent">
+						{post.data.title}
+					</a>
+					<p class="mt-1 text-sm text-muted">{post.data.description}</p>
+					<p class="mt-1 text-xs text-muted">
+						<time datetime={post.data.date.toISOString()}>
+							{post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+						</time>
+					</p>
+				</li>
+			))}
+		</ul>
 	</main>
 </Layout>

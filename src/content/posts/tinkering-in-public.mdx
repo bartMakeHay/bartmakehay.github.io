@@ -1,0 +1,50 @@
+---
+title: "Hello World — Tinkering in Public"
+description: "Why I'm starting this blog, a bit about me, and how the posts themselves come together."
+date: 2026-08-23
+---
+
+import ZoomableImage from '../../components/ZoomableImage.astro';
+
+Anyone who knows me knows *I can't help tinkering* when there's room to *improve how I work*. These past few months *I've become the subject* of that myself: I've had my own workflow — from daily time tracking to architecture modeling — supported step by step by Anthropic's Claude.
+
+This blog is where *I keep track* of that process. Not because the tooling itself is the story, but because I've noticed colleagues and friends in the field genuinely following along. As of today: *see my blog*. It also doubles as a record I'm building for myself — a kind of log of my own growth that I'll enjoy looking back through later.
+
+**A bit about me.** I've been active in IT since 2002, after a [Master's in Computer Science](https://www.uantwerpen.be/nl/studeren/aanbod/alle-opleidingen/informatica-studeren/master/) with an initial [focus](https://www.researchgate.net/profile/Bart-Du-Bois) on [Software Evolution](https://link.springer.com/book/10.1007/978-3-540-76440-3) — with thanks to Prof. [Serge Demeyer](https://www.linkedin.com/in/sergedemeyer/), Prof. [Tom Mens](https://www.linkedin.com/in/tommens/), and Prof. [Jan Verelst](https://en.wikipedia.org/wiki/Jan_Verelst_(computer_scientist)). *Building and sharing knowledge* has stuck with me ever since: I taught at the University of Antwerp (through the [Lab on Reengineering](https://www.uantwerpen.be/en/research-groups/ansymo/laboratories/lore/)), and later built out the [XPLUS Academy](https://www.xplus.eu/xplus-academy/about/about-xplus-academy) — their training portfolio around architecture disciplines, architect assessments, and individual coaching tracks.
+
+Since 2011 I've actively *modeled* with [ArchiMate](https://en.wikipedia.org/wiki/ArchiMate) (thanks to [Carl Seghers](https://www.linkedin.com/in/carlseghers/) at AXA Insurance), and since 2014 I've worked as an IT freelancer, initially through EntArch. Since 2024 I've combined the [SAFe](https://framework.scaledagile.com) roles of [System Architect](https://framework.scaledagile.com/system-architect) and [Product Owner](https://framework.scaledagile.com/product-owner) of the [System Team](https://framework.scaledagile.com/system-team) at my current client. For anyone familiar with the [DISC model](https://en.wikipedia.org/wiki/DISC_assessment): I'm a strongly blue profile — hence this pull toward structure, right down to how I build my own blog.
+
+<ZoomableImage src="/images/posts/tinkering-in-public/timeline.svg" alt="Timeline of Bart's career from IT architect in 2002 to combining System Architect and Product Owner roles in 2024, with the AI boost becoming tangible in 2026" />
+
+**Personal context.** I'm a proud father of two sons, and since my recent marriage to [Debby](https://www.seravita.be/over) also a bonus dad to her daughters. We live together in Lier, near Antwerp, Belgium. Our free time goes mostly to walks and bike rides, wellness, and the occasional trip away — my old hobby, dinghy sailing, gets a bit less of my time these days as a result.
+
+**Work context.** I work on a multi-year program renewing core systems, both financial and operational — some 40 people strong. It runs on *Scaled Agile* ([SAFe](https://framework.scaledagile.com/)), and in the current epics the *architectural framing* is carrying more weight: we're laying out a more concrete blueprint for the program covering the next eighteen months. That kind of work — and how I approach it — is exactly what the content series on this blog will draw from. The team structure behind it, with the architecture staffing layered on top:
+
+<ZoomableImage src="/images/posts/tinkering-in-public/team-structure.svg" alt="Team structure diagram showing four functional teams supported by a cross-cutting System Team, and three architect roles not tied to any specific team" />
+
+<details>
+<summary>Reading notes</summary>
+
+- Each of the four teams is supported by the cross-cutting System Team.
+- Each team carries its own Solution Architect; the System Team additionally carries three platform roles (Platform/Integration/Infrastructure Architect) spanning the teams.
+- There are also 3 architect roles not tied to any specific team.
+
+</details>
+
+**How this blog comes together.** The blog itself is also an application of that same *way of working*: an Obsidian vault where ideas mature and get distilled first, with a deliberate anonymization and quality step, before they make their way to the actual site. In short: I apply to my own publication process what I describe in the series themselves.
+
+<ZoomableImage src="/images/posts/tinkering-in-public/toolchain.svg" alt="Toolchain diagram showing Obsidian, GitHub, and Claude feeding relentless blogging, with GitHub Pages serving blog consultation to the reader" />
+
+<details>
+<summary>Reading notes</summary>
+
+- At the top and bottom sits the business layer: "Relentless blogging" receives from both Vault management (Obsidian) and Editing (Claude) — both feed the same drive; "Blog consultation" receives from the deployed site, the reader's side.
+- Obsidian and Claude each carry out their own function on what lives in GitHub: Obsidian manages the vault directly, Claude hosts the "Blog support" component with its two functions (Editing, Publishing).
+- That Claude usage deliberately writes to the `bartmakehay.github.io` repo, not to the deployed site itself — GitHub itself carries the Deploy process that publishes to GitHub Pages.
+- The handoff from Editing to Publishing is never automatic: it only happens after a deliberate anonymization confirmation.
+
+</details>
+
+Ultimately, I write this out of *a drive to make a difference* — and preferably one that outlasts my own involvement. This blog is an expression of that: sharing *my own progress in workflow support* with colleagues and a wider network, so that what I learn lands somewhere else too.
+
+Follow along, and feel free to jump into whichever series interests you.
