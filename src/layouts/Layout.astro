@@ -17,18 +17,34 @@ const { title } = Astro.props;
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		<link rel="alternate" type="application/rss+xml" title="bartmakehay" href="/rss.xml" />
 		<title>{title}</title>
 	</head>
 	<body class="min-h-screen flex flex-col bg-paper text-ink font-sans antialiased">
-		<header class="mx-auto w-full max-w-2xl border-b border-border px-4 py-6">
+		<header class="mx-auto w-full max-w-2xl flex items-baseline justify-between border-b border-border px-4 py-6">
 			<a href="/" class="text-lg font-bold text-ink hover:text-accent">bartmakehay</a>
+			<a href="/rss.xml" class="flex items-center gap-1 text-sm text-muted hover:text-accent" aria-label="RSS feed">
+				<!-- icon: Feather/Lucide "rss", MIT license -->
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4">
+					<path d="M4 11a9 9 0 0 1 9 9" />
+					<path d="M4 4a16 16 0 0 1 16 16" />
+					<circle cx="5" cy="19" r="1" fill="currentColor" stroke="none" />
+				</svg>
+				RSS
+			</a>
 		</header>
 		<div class="flex-1">
 			<slot />
 		</div>
 		<footer class="mx-auto w-full max-w-2xl border-t border-border px-4 py-6 text-sm text-muted">
 			<p>
-				Written by <a href="https://www.linkedin.com/in/duboisbart/" class="text-accent hover:text-accent-hover">Bart Du Bois</a>, founder of <a href="https://www.makehay.be" class="text-accent hover:text-accent-hover">Make Hay BV</a>.
+				Written by Bart Du Bois
+				<a href="https://www.linkedin.com/in/duboisbart/" class="ml-1 inline-block translate-y-[1px] align-baseline text-muted hover:text-accent" aria-label="Bart Du Bois on LinkedIn">
+					<!-- icon: Simple Icons "linkedin", CC0 -->
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+						<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+					</svg>
+				</a> founder of <a href="https://www.makehay.be" class="text-accent hover:text-accent-hover">Make Hay BV</a>.
 			</p>
 		</footer>
 	</body>
