@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Subscribe — bartmakehay">
+	<main class="mx-auto max-w-2xl px-4 py-8">
+		<p class="text-xs font-semibold tracking-wide text-accent uppercase">Subscribe</p>
+		<h1 class="mt-3 text-2xl font-bold text-ink">Follow this blog over RSS</h1>
+		<p class="mt-3 max-w-[60ch] text-sm text-muted">
+			New posts show up here, and also as an RSS feed — no account, no algorithm, just new posts
+			landing in whatever reader you already use.
+		</p>
+
+		<div class="mt-6 flex items-center gap-2 rounded border border-border bg-card px-3 py-2">
+			<code id="feed-url" class="flex-1 truncate text-sm text-ink">https://bartmakehay.github.io/rss.xml</code>
+			<button
+				id="copy-feed-url"
+				type="button"
+				class="shrink-0 rounded border border-border px-2 py-1 text-xs text-muted hover:text-accent"
+			>
+				Copy
+			</button>
+		</div>
+
+		<p class="mt-4 text-sm text-muted">
+			Paste that URL into a feed reader such as <a href="https://feedly.com" class="text-accent hover:text-accent-hover">Feedly</a> or <a href="https://nnw.ridiculousfish.com" class="text-accent hover:text-accent-hover">NetNewsWire</a>, or <a href="/rss.xml" class="text-accent hover:text-accent-hover">open the raw feed</a> if your browser or reader can subscribe directly from there.
+		</p>
+
+		<p class="mt-8 text-sm text-muted">
+			Prefer to just read? <a href="/" class="text-accent hover:text-accent-hover">See all posts</a>.
+		</p>
+	</main>
+</Layout>
+
+<script>
+	const button = document.getElementById('copy-feed-url') as HTMLButtonElement | null;
+	const urlEl = document.getElementById('feed-url');
+
+	button?.addEventListener('click', async () => {
+		const text = urlEl?.textContent ?? '';
+		await navigator.clipboard.writeText(text);
+		const original = button.textContent;
+		button.textContent = 'Copied!';
+		setTimeout(() => {
+			button.textContent = original;
+		}, 1500);
+	});
+</script>
