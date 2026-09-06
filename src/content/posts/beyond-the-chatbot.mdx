@@ -1,0 +1,154 @@
+---
+title: "Beyond the Chatbot — Why Your AI Workflow Needs Structure"
+description: "How a disciplined journaling habit, a move from OneNote to Markdown, and a layered memory model let me actually put an AI agent to work on my own working context — safely."
+date: 2026-09-06
+---
+
+import ZoomableImage from '../../components/ZoomableImage.astro';
+
+## 1. Introduction: the short circuit in the machine
+
+<ZoomableImage src="/images/posts/beyond-the-chatbot/ai-wow-factor-vs-structured-context.png" alt="Illustration of the AI wow-factor breaking down into unstructured chat without context, then being filtered into structured work context" />
+
+Put on a classic architect's glasses (durability and structural integrity) and the wow factor of Large Language Models fades once you realize that such a **digital assistant is disconnected from your actual work context**. However brilliantly these AI agents respond to our questions, they are blind to our legacy migrations, our architecture decisions, and the day-to-day decision logs that actually define our work.
+
+Over the past while, AI mastery has stopped being about writing more poetic prompts for me. My blue DISC profile clashes with that kind of free-form prompting, and demands a **stricter approach**: one that enables AI effectiveness from its foundation up. A foundation that offers a **machine-readable base of your own work context**. If you want to promote that AI agent to a worthy colleague, you can't treat it as a chatbot — you're looking at a project to **reshape** your work context into a structured, transparent asset.
+
+In this blog post I'll walk you through my own evolution: how my work context became usable for an AI agent, and which **safeguards** I put in place to deploy it safely.
+
+## 2. Your habits are older than your tools
+
+That AI effectiveness we just talked about rests on **digitizing your work context**. Your AI agent has no idea about anything you never wrote down or fed it, and hallucinates to fill the gaps.
+
+I've been experimenting with **taking notes** since 2002. I tried thematic grouping, industrialized a [Microsoft OneNote](https://support.microsoft.com/en-us/onenote/) workflow, and kept sharpening my sword until a **disciplined journaling habit** became second nature. That led me to a fixed daily rhythm: every workday gets a structured note, with fixed sections for planning and reflection. That became my second brain.
+
+That journaling habit is today the **fuel of my AI workflow.** Alongside my own notes, I merge Copilot conversation transcripts into a "complete" daily note. I no longer need to brief my AI agent on the outcome of a design discussion: it can just read it in my journal. That structural discipline is an absolute precondition for the AI support I enjoy today.
+
+<ZoomableImage src="/images/posts/beyond-the-chatbot/onenote-vs-markdown-tree-structuur.png" alt="Comparison of a monolithic OneNote journal versus a distributed Markdown knowledge base as a folder tree" />
+
+That habit of faithful record-keeping, years older than my AI use, is what enables my current **AI-agent-with-work-context setup**.
+
+## 3. Breaking through the "OneNote wall"
+
+*Didn't Microsoft OneNote already offer sufficient structure?* It was, after all, **perfectly fine for my personal use**: I casually accumulated agenda items for recurring meetings, I leaned on the structured actions I kept in those notebook section pages — but my **own thinking was the sole engine** behind that note-taking's payoff.
+
+For an AI agent, that OneNote is a closed silo. Its proprietary format formed a "OneNote wall" that my agent couldn't independently browse, parse, or navigate. My drive for reusable AI context required a **liberation of knowledge into the "Markdown era".**
+
+[Markdown](https://en.wikipedia.org/wiki/Markdown) isn't just an aesthetic preference — it guarantees that your professional history, as **universal, plain-text files**, is easily navigable by your agent like a file system. No binary, proprietary format, just raw text with conventions. *[LaTeX](https://en.wikipedia.org/wiki/LaTeX) for beginners, quoi*.
+
+- **The OneNote era (rigid/siloed):** proprietary binary formats, closed ecosystems, high friction for agent navigation.
+- **The Markdown era (transparent/universal):** universal plain-text files, high transparency, and a dynamic graph architecture in which agents can read and query raw text directly.
+
+<ZoomableImage src="/images/posts/beyond-the-chatbot/onenote-to-obsidian.png" alt="Three phases: OneNote as a black box, Markdown as the open ground, and Obsidian plus Claude as the graph" />
+
+## 4. "Working memory" versus "long-term memory" architectures
+
+*"Great,"* you'll say, *"I'll just convert my entire work context into that machine-readable form. We dump the whole Markdown archive on that AI agent and let it chew through it."* Ouch — there goes the reasoning quality of your AI deployment. That's called **context bloat**, and that pitfall undermines your AI returns.
+
+The key to quality AI reasoning is a **layered memory structure**:
+- **Long-term memory** — the full collection of your raw notes and their rewrites, on disk. As in the earlier [Hello World — Tinkering in Public](/posts/tinkering-in-public) post, [Obsidian](https://obsidian.md) is an ideal tool for this.
+- **Working memory** — a task file as a deliberately assembled, limited context slice — specific sources and links — scoped to one active task.
+
+And where there's memory, there are **nodes and connections: a note [graph](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics))**. As a human you tap into the power of Obsidian (where this note graph is called a **[Vault](https://help.obsidian.md/Getting+started/Create+a+vault)**) to navigate that note graph via the Obsidian UI; your AI agent taps into it via the Obsidian Command-Line Interface ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)) and possibly the Model Context Protocol ([MCP](https://en.wikipedia.org/wiki/Model_Context_Protocol)).
+
+This **use of the note graph** naturally isn't limited to *read access*. Your task agent answers questions and distills insight and output that **flows back** into your note graph, so that **your long-term memory grows in value with every agent deployment**.
+
+*So what is that working memory / task file?* It consists of the following parts:
+- focusing on specific notes — e.g. one project, or just a handful of consideration notes (**session scoping**);
+- targeted links and backlinks between notes in your vault (**sources**);
+- tight instructions on success criteria and boundaries (**goal/scope**); and
+- note file properties like type, status, date for filtering (**metadata**).
+
+<ZoomableImage src="/images/posts/beyond-the-chatbot/geheugenlagen-en.svg" alt="Diagram of long-term memory, working memory, and the feedback loop between the vault, a scoped task file, an AI agent, and the artefact it produces" />
+
+<details>
+<summary>Reading notes</summary>
+
+- The loop is deliberately circular: everything the agent produces flows back into the vault — so long-term memory compounds instead of just being read.
+- Working memory deliberately holds only two things: selected sources and goal/scope — a minimal, scoped slice, not a copy of the vault.
+- The AI agent is grounded by that working memory, not directly by the vault: the agent never touches the full vault, only the deliberately assembled selection.
+
+</details>
+
+## 5. Security has to be verifiable
+
+*Doesn't using Claude like this throw your entire Vault **up for grabs**?* No — not with the right settings.
+
+I personally chose the **Claude for Work Team Premium plan**. My notes involve company-related information after all, which implies information-security standards ([CIA triad](https://en.wikipedia.org/wiki/Information_security#Key_principles), [ISO 27001](https://en.wikipedia.org/wiki/ISO/IEC_27001), [GDPR Art. 28](https://gdpr-info.eu/art-28-gdpr/)/[32](https://gdpr-info.eu/art-32-gdpr/)).
+
+What's notable about the Claude Team plan, summed up in three points:
+- **Contractual and legal basis** — the plan provides Anthropic Commercial Terms including a Data Processing Addendum (DPA) compliant with GDPR Art. 28, including Standard Contractual Clauses (SCC) for data transfers outside the EEA.[^1]
+- **Model training and data use** — my Claude sessions are, by default, never used to train AI models.[^2][^3] This is contractually fixed in the Commercial Terms and requires no opt-out or manual setting.
+- **[GDPR](https://gdpr-info.eu/) compliance** — Art. 28 (data processing agreement) is covered via the Commercial Terms, Art. 32 (technical & organizational measures) via the DPA and SOC 2/ISO 27001 certifications, and Art. 33/34 (breach notification) in case of incidents.
+
+The Claude Team plan further provides the following **security measures**:
+- *[SOC 2 Type II](https://en.wikipedia.org/wiki/System_and_Organization_Controls)*: independent audit of security controls (availability, confidentiality, integrity). Report available under NDA.
+- *[ISO 27001:2022](https://www.iso.org/standard/27001)*: international certification for information security management. Fully certified since 2025.
+- *[ISO/IEC 42001:2023](https://www.iso.org/standard/81230.html)*: AI-specific governance standard; demonstrates responsible management of AI systems.
+- *[CSA STAR Level 2](https://cloudsecurityalliance.org/star)*: Cloud Security Alliance certification for cloud providers.
+- *[NIST 800-171](https://csrc.nist.gov/pubs/sp/800/171/r3/final)*: attestation for protecting controlled unclassified information.
+- *Annual penetration tests*: external security tests; reports available via the Trust Center under NDA.
+- *Encryption in transit*: TLS for all data transfers.
+- *Encryption at rest*: AES-256 for stored data.
+- *Central admin*: user management and billing from a single dashboard.
+
+A detailed comparison of the four plan tiers across 21 security and compliance criteria is in the [appendix](#appendix--detailed-security-comparison) at the end of this post.
+
+**AI agent deployment scoping** — these measures lead me to handle the following information types as follows:
+- *internal documents without personal data* (architecture documents, technical specs): fine to process.
+- *productivity tasks* (summarizing, translating, drafting): fine to process.
+- *personal data, employee data*: don't process — requires Zero Data Retention, which only Claude Enterprise provides.
+- *strictly confidential board documents*: same — don't process.
+
+[^1]: Claude Team GDPR guide (Compound Law) — https://compound.law/en-DE/tools/claude-team-gdpr/
+[^2]: Anthropic Trust Center – certificates and compliance artifacts — https://trust.anthropic.com
+[^3]: Anonyome Labs – Claude privacy analysis (April 2026) — https://anonyome.com/knowledge-center/ai-privacy/claude-privacy/
+[^4]: Claude Pricing – plan comparison — https://claude.com/pricing
+
+## 6. Guard as code — why "be careful" is not a safety net
+
+The nice thing about deploying AI is that there's only a **short distance between "lesson indicated" and "lesson learned".**
+
+For instance, I fairly quickly switched from editing my Obsidian vault through the local file system to managing it via the Obsidian CLI. However, Claude didn't immediately realize that `obsidian delete --help` doesn't produce help instructions but instead immediately deletes a note. Even though Claude played it safe, this still amounted to an incident.
+
+<ZoomableImage src="/images/posts/beyond-the-chatbot/guardrail-in-tekst-vs-code-slide.png" alt="Comparison of prompt-based guardrails, which operate on trust and fail silently, versus code-based guardrails that intercept and block commands before execution" />
+
+Safety requires deterministic, technical enforcement. I realize that through **"guard as code"**:
+- **Enforced read-only access:** technical hooks and scripts that block write actions to source data, regardless of what the agent's prompt says.
+- **The human gatekeeper:** the agent prepares the draft or the commit, only I actually execute it.
+
+A safety net that exists only in text ("be careful") is no safety net. A safety net that blocks the action itself, is.
+
+## 7. Conclusion: the human spark
+
+In software engineering we know that technology changes, improves, and gets replaced. The move from OneNote to Markdown is, in that sense, just a small technical step. The old habit of **disciplined note-taking** was the real leap. And your AI agent can of course add excellent value on top of that discipline.
+
+So, above all, question your own habits. *How do you structure your thoughts and your work context?* *Is the gap between human intent and machine execution, for you too, still to be bridged by **structuring and digitizing** your own work context?*
+
+## Appendix — detailed security comparison
+
+The table below compares the four plan tiers across 21 security and compliance criteria.[^1][^2][^4]
+
+| Domain / Measure | Claude Max (Consumer) | Team Standard (Commercial) | Team Premium (Commercial) | Team Enterprise (Commercial) |
+|---|---|---|---|---|
+| Data Processing Agreement (DPA) | No | Yes | Yes | Yes |
+| No model training (default) | No | Yes | Yes | Yes |
+| GDPR Art. 28 – data processing agreement | No | Yes | Yes | Yes |
+| Standard Contractual Clauses (SCC) | No | Yes | Yes | Yes |
+| SOC 2 Type II certified | Yes | Yes | Yes | Yes |
+| ISO 27001:2022 certified | Yes | Yes | Yes | Yes |
+| ISO/IEC 42001 (AI governance) | Yes | Yes | Yes | Yes |
+| CSA STAR Level 2 | Yes | Yes | Yes | Yes |
+| NIST 800-171 attestation | No | Yes | Yes | Yes |
+| Annual penetration tests | No | Yes | Yes | Yes |
+| Encryption in transit (TLS) | Yes | Yes | Yes | Yes |
+| Encryption at rest (AES-256) | Yes | Yes | Yes | Yes |
+| Single Sign-On (SSO / SAML) | No | No | No | Yes |
+| SCIM provisioning | No | No | No | Yes |
+| Audit logs | No | No | No | Yes |
+| Central admin / user management | No | Yes | Yes | Yes |
+| EU data residency (contractual) | No | No | No | Partial |
+| Zero Data Retention (ZDR) | No | No | No | Yes |
+| Retention period (no training) | 30 days | 30 days | 30 days | Configurable |
+| Special category personal data (Art. 9) | No | No | No | Partial |
+| HIPAA-ready | No | No | No | Yes |
