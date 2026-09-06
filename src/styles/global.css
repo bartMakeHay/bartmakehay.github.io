@@ -13,3 +13,9 @@
 	--color-accent: oklch(56% 0.13 45);
 	--color-accent-hover: oklch(46% 0.14 42);
 }
+
+.prose table {
+	display: block;
+	max-width: 100%;
+	overflow-x: auto;
+}
