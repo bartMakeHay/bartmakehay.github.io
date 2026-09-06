@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { formatDate } from '../lib/format-date';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -10,7 +11,9 @@ const posts = (await getCollection('posts')).sort(
 <Layout title="bartmakehay">
 	<main class="mx-auto max-w-2xl px-4 py-8">
 		<p class="text-xs font-semibold tracking-wide text-accent uppercase">Personal blog</p>
-		<p class="mt-3 max-w-[40ch] text-sm text-muted">Blog in progress</p>
+		<p class="mt-3 max-w-[60ch] text-sm text-muted">
+			Bart's blog on software architecture, tinkering, and making hay.
+		</p>
 		<ul class="mt-8 space-y-6">
 			{posts.map((post) => (
 				<li>
@@ -19,9 +22,7 @@ const posts = (await getCollection('posts')).sort(
 					</a>
 					<p class="mt-1 text-sm text-muted">{post.data.description}</p>
 					<p class="mt-1 text-xs text-muted">
-						<time datetime={post.data.date.toISOString()}>
-							{post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
-						</time>
+						<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
 					</p>
 				</li>
 			))}
