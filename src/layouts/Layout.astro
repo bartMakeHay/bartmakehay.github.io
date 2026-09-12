@@ -1,24 +1,49 @@
 ---
 import '../styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE, SITE_OG_IMAGE_ALT } from '../lib/site';
 
 interface Props {
 	title: string;
+	description?: string;
+	/* 'article' on a post, so link previews and crawlers see the difference */
+	type?: 'website' | 'article';
 }
 
-const { title } = Astro.props;
+const { title, description = SITE_DESCRIPTION, type = 'website' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(SITE_OG_IMAGE, Astro.site);
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 		<link rel="alternate" type="application/rss+xml" title="bartmakehay" href="/rss.xml" />
+		<link rel="canonical" href={canonical} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<!-- link previews (WhatsApp, Slack, LinkedIn, …) read these -->
+		<meta property="og:type" content={type} />
+		<meta property="og:site_name" content={SITE_TITLE} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={SITE_OG_IMAGE_ALT} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
 	</head>
 	<body class="min-h-screen flex flex-col bg-paper text-ink font-sans antialiased">
 		<header class="mx-auto w-full max-w-2xl flex items-baseline justify-between border-b border-border px-4 py-6">
