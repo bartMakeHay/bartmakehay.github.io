@@ -624,11 +624,13 @@ const latestNum = Number(latest.split('-W')[1]);
 
 <style is:global>
 	.tx { container-type: inline-size; display: grid; gap: 0.7rem; }
-	.tx-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; }
+	.tx-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; white-space: nowrap; flex-shrink: 0; }
 	/* nowrap so the week-bar always sits in the same spot — varying content
 	   length ("· Latest" showing or not, a longer date range) must not decide
 	   whether this wraps; only the container-query breakpoint below does. */
-	.tx-toprow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: nowrap; }
+	/* wrap at this level (never inside a child) so a rare too-wide week drops the
+	   whole week-bar to its own line instead of partially reflowing mid-content */
+	.tx-toprow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 	.tx-formrow { display: flex; align-items: center; }
 	.tx-nav { display: flex; align-items: center; gap: 0.3rem; }
 	.tx-chev { border: 0; background: transparent; color: var(--color-aside); cursor: pointer; padding: 0.15rem; border-radius: 4px; display: inline-flex; }
@@ -649,7 +651,10 @@ const latestNum = Number(latest.split('-W')[1]);
 	.tx-link { border: 0; background: transparent; padding: 0; font: inherit; color: var(--color-accent); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; }
 	.tx-link svg { width: 13px; height: 13px; }
 	.tx-link:hover { color: var(--color-accent-hover); }
-	.tx-week { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--color-aside); }
+	/* nowrap + a fixed min-width sized to the longest realistic content
+	   (cross-month range + "Latest" link both present) — so the chevron
+	   always sits at the same spot, whatever a given week's label reads */
+	.tx-week { display: flex; align-items: center; gap: 0.5rem; flex-wrap: nowrap; flex-shrink: 0; min-width: 24.5rem; font-size: 0.78rem; color: var(--color-aside); }
 	.tx-week b { color: var(--color-ink); }
 	.tx-week .sep { color: var(--color-line); }
 	.tx-panel { border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 1rem; }
@@ -721,7 +726,9 @@ const latestNum = Number(latest.split('-W')[1]);
 	/* deck */
 	.dk { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; align-items: start; }
 	@container (max-width: 480px) { .dk { grid-template-columns: minmax(0, 1fr); } .sky .node text { font-size: 17px; } }
-	@container (max-width: 480px) { .tx-toprow { flex-direction: column; align-items: flex-start; flex-wrap: wrap; } }
+	/* a phone-sized card can't fit the week-bar's fixed min-width at all —
+	   let it fall back to wrapping/shrinking freely instead of overflowing */
+	@container (max-width: 480px) { .tx-week { min-width: 0; flex-wrap: wrap; flex-shrink: 1; } }
 	.deck { position: relative; height: 11rem; perspective: 1000px; }
 	.deck .sc { position: absolute; inset: 0; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); }
 	.deck .sc.s1 { transform: translate(6px, 6px) rotate(1.5deg); }
