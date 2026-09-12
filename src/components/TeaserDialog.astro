@@ -1,0 +1,130 @@
+---
+/**
+ * Shared teaser dialog. Include once per page that uses <Topic> or <TopicExplorer>.
+ * Topic data comes from src/data/topics.json, generated from the blog vault.
+ */
+import topicsData from '../data/topics.json';
+
+const topics = Object.fromEntries(topicsData.topics.map((t) => [t.id, t]));
+const lenses = topicsData.lenses;
+const weeks = topicsData.weeks;
+---
+
+<dialog id="teaser-dialog" class="teaser" aria-labelledby="teaser-title">
+	<div class="teaser-body">
+		<div class="teaser-top">
+			<div>
+				<p class="t-eyebrow" id="teaser-lens"></p>
+				<h3 id="teaser-title"></h3>
+			</div>
+			<button class="teaser-close" id="teaser-close" aria-label="Close">
+				<!-- icon: Feather/Lucide "x", MIT license -->
+				<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+			</button>
+		</div>
+		<div class="teaser-para"><p class="teaser-label">What &amp; why</p><p id="teaser-what"></p></div>
+		<div class="teaser-para"><p class="teaser-label">How I'm working with it</p><p id="teaser-how"></p></div>
+		<div class="teaser-foot">
+			<span class="recency" id="teaser-recency"></span>
+			<span class="teaser-actions">
+				<a class="linkish" id="teaser-post" hidden>Read the post →</a>
+				<button class="linkish" id="teaser-next">Another random topic →</button>
+			</span>
+		</div>
+	</div>
+</dialog>
+
+<script is:inline define:vars={{ topics, lenses, weeks }}>
+	(function () {
+		const dlg = document.getElementById('teaser-dialog');
+		if (!dlg || dlg.dataset.wired) return;
+		dlg.dataset.wired = '1';
+
+		const weekKeys = Object.keys(weeks).sort();
+		const latest = weekKeys[weekKeys.length - 1];
+		const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		const md = (s) =>
+			esc(s).replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>');
+		const dots = (w) =>
+			'<span class="dots" aria-hidden="true">' + [1, 2, 3].map((i) => '<i class="' + (i <= w ? 'on' : '') + '"></i>').join('') + '</span>';
+		const weekNum = (key) => Number(key.split('-W')[1]);
+		const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+		const latestWeekOf = (id) => weekKeys.filter((k) => weeks[k][id]).pop() || latest;
+
+		let current = null;
+		let currentWeek = latest;
+
+		function open(id, week) {
+			const t = topics[id];
+			if (!t) return;
+			current = id;
+			currentWeek = (week && weeks[week] && weeks[week][id]) ? week : latestWeekOf(id);
+			const w = weeks[currentWeek][id] || 1;
+			document.getElementById('teaser-lens').textContent = lenses[t.lens].label;
+			document.getElementById('teaser-title').textContent = t.title;
+			document.getElementById('teaser-what').innerHTML = md(t.what);
+			document.getElementById('teaser-how').innerHTML = md(t.how);
+			const link = document.getElementById('teaser-post');
+			if (t.post) {
+				link.href = '/posts/' + t.post + '/';
+				link.hidden = false;
+			} else {
+				link.hidden = true;
+			}
+			document.getElementById('teaser-recency').innerHTML =
+				dots(w) + ' ' + (w === 1 ? 'surfaced once' : 'surfaced ' + w + '×') + ' in week ' + weekNum(currentWeek);
+			if (!dlg.open) dlg.showModal();
+		}
+
+		document.getElementById('teaser-close').addEventListener('click', () => dlg.close());
+		document.getElementById('teaser-next').addEventListener('click', () => {
+			const pool = Object.keys(weeks[currentWeek]).filter((id) => id !== current && topics[id]);
+			if (pool.length) open(rnd(pool), currentWeek);
+		});
+		dlg.addEventListener('click', (e) => {
+			if (e.target === dlg) dlg.close();
+		});
+		document.addEventListener('click', (e) => {
+			const b = e.target.closest('[data-topic]');
+			if (b && b.dataset.topic) open(b.dataset.topic, b.dataset.week);
+		});
+
+		/* other components open a teaser directly instead of faking a click */
+		window.openTeaser = open;
+	})();
+</script>
+
+<style is:global>
+	.teaser {
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		padding: 0;
+		width: min(30rem, calc(100vw - 2rem));
+		background: var(--color-card);
+		color: var(--color-ink);
+		box-shadow: 0 20px 60px rgb(20 18 15 / 0.25);
+	}
+	.teaser::backdrop { background: rgb(20 18 15 / 0.45); }
+	.teaser-body { padding: 1.25rem 1.4rem 1.1rem; display: grid; gap: 0.75rem; }
+	.teaser-top { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+	.teaser h3 { font-size: 1.25rem; font-weight: 600; margin: 0.15rem 0 0; line-height: 1.2; }
+	.teaser-close { border: 0; background: transparent; color: var(--color-aside); cursor: pointer; padding: 0.2rem; border-radius: 4px; }
+	.teaser-close:hover { color: var(--color-ink); background: var(--color-hover); }
+	.teaser-para { display: grid; gap: 0.2rem; }
+	.teaser-label { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-aside); margin: 0; }
+	.teaser-para p { font-size: 0.92rem; color: var(--color-muted); line-height: 1.55; margin: 0; }
+	.teaser-para a { color: var(--color-accent); text-decoration: underline; text-decoration-style: dotted; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+	.teaser-para a:hover { color: var(--color-accent-hover); text-decoration-style: solid; }
+	.teaser-foot {
+		display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+		border-top: 1px solid var(--color-border); padding-top: 0.8rem; font-size: 0.78rem; color: var(--color-aside);
+	}
+	.teaser-foot .recency { display: inline-flex; align-items: center; gap: 0.45rem; }
+	.teaser-actions { display: inline-flex; gap: 0.9rem; align-items: center; flex-wrap: wrap; }
+	.teaser .linkish { border: 0; background: transparent; padding: 0; color: var(--color-accent); font-weight: 600; cursor: pointer; font: inherit; font-weight: 600; }
+	.teaser .linkish:hover { color: var(--color-accent-hover); }
+	.dots { display: inline-flex; gap: 3px; }
+	.dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--color-line); display: inline-block; }
+	.dots i.on { background: var(--color-accent); }
+	.t-eyebrow { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; }
+</style>

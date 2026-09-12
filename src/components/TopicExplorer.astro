@@ -1,0 +1,599 @@
+---
+/**
+ * "What's been on my mind lately" — four ways to browse the topics of one week.
+ *
+ * Data: src/data/topics.json, generated from the blog vault
+ * (90_Meta/scripts/teasers-naar-topics-json.py). Never edited here by hand.
+ *
+ * Forms: Shuffle (default) · Map · Deck · Lenses, in a fixed carousel.
+ * The chosen form is remembered in this browser under `bmh.explorer.view`.
+ * Weeks with more than `mapMax` topics drop the Map form; Lenses takes its place.
+ * Without JavaScript the latest week renders as a plain list of topics.
+ */
+import topicsData from '../data/topics.json';
+import TeaserDialog from './TeaserDialog.astro';
+
+const { topics, lenses, weeks, mapMax } = topicsData;
+const byId = Object.fromEntries(topics.map((t) => [t.id, t]));
+const weekKeys = Object.keys(weeks).sort();
+const latest = weekKeys[weekKeys.length - 1];
+const latestTopics = Object.keys(weeks[latest]).map((id) => byId[id]);
+const latestNum = Number(latest.split('-W')[1]);
+---
+
+<section class="tx" data-explorer aria-label="What's been on my mind lately">
+	<noscript>
+		<p class="tx-kicker">What's been on my mind lately</p>
+		<p class="tx-nojs">Week {latestNum}, {latestTopics.length} topics.</p>
+		<ul class="tx-nojs-list">
+			{latestTopics.map((t) => (
+				<li><b>{t.title}</b> — {t.hook}</li>
+			))}
+		</ul>
+	</noscript>
+</section>
+
+<TeaserDialog />
+
+<script is:inline define:vars={{ topics, lenses, weeks, mapMax }}>
+	(function () {
+		const root = document.querySelector('[data-explorer]');
+		if (!root) return;
+
+		const byId = Object.fromEntries(topics.map((t) => [t.id, t]));
+		const WEEK_KEYS = Object.keys(weeks).sort();
+		const LATEST = WEEK_KEYS[WEEK_KEYS.length - 1];
+		const FORMS = [
+			{ id: 'shuffle', label: 'Shuffle' },
+			{ id: 'map', label: 'Map' },
+			{ id: 'deck', label: 'Deck' },
+			{ id: 'lenses', label: 'Lenses' },
+		];
+		const DEFAULT_IDX = 0; /* Shuffle */
+		const KEY = 'bmh.explorer.view';
+
+		const readPref = () => {
+			try {
+				const v = localStorage.getItem(KEY);
+				return FORMS.some((f) => f.id === v) ? v : null;
+			} catch (e) {
+				return null;
+			}
+		};
+		const writePref = (v) => {
+			try {
+				v == null ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, v);
+			} catch (e) {}
+		};
+
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+		const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		const md = (s) =>
+			esc(s).replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>');
+		const dotsHtml = (w) =>
+			'<span class="dots" aria-hidden="true">' + [1, 2, 3].map((i) => '<i class="' + (i <= w ? 'on' : '') + '"></i>').join('') + '</span>';
+		const weekNum = (key) => Number(key.split('-W')[1]);
+		const timesLabel = (w, key) => (w === 1 ? 'surfaced once' : 'surfaced ' + w + '×') + ' in week ' + weekNum(key);
+		const weekTopics = (key) =>
+			Object.entries(weeks[key])
+				.map(([id, w]) => Object.assign({}, byId[id], { w }))
+				.sort((a, b) => b.w - a.w);
+
+		/* ---- ISO week helpers ---- */
+		const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		const pad = (n) => String(n).padStart(2, '0');
+		function mondayOf(d) {
+			const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+			t.setDate(t.getDate() - ((t.getDay() + 6) % 7));
+			return t;
+		}
+		function weekKeyOf(d) {
+			const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+			const day = t.getUTCDay() || 7;
+			t.setUTCDate(t.getUTCDate() + 4 - day);
+			const y = t.getUTCFullYear();
+			const w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7);
+			return y + '-W' + pad(w);
+		}
+		function mondayFromKey(key) {
+			const [y, w] = key.split('-W').map(Number);
+			const m = mondayOf(new Date(y, 0, 4));
+			m.setDate(m.getDate() + (w - 1) * 7);
+			return m;
+		}
+		function rangeLabel(key) {
+			const a = mondayFromKey(key);
+			const b = new Date(a);
+			b.setDate(a.getDate() + 6);
+			return a.getMonth() === b.getMonth()
+				? a.getDate() + '–' + b.getDate() + ' ' + MONTHS[a.getMonth()] + ' ' + a.getFullYear()
+				: a.getDate() + ' ' + MONTHS[a.getMonth()] + ' – ' + b.getDate() + ' ' + MONTHS[b.getMonth()] + ' ' + b.getFullYear();
+		}
+		const TODAY = new Date();
+		const monthIdx = (y, m) => y * 12 + m;
+		const firstMonday = mondayFromKey(WEEK_KEYS[0]);
+		const MIN_MONTH = monthIdx(firstMonday.getFullYear(), firstMonday.getMonth());
+		const lastMonday = mondayFromKey(LATEST);
+		const MAX_MONTH = Math.max(monthIdx(TODAY.getFullYear(), TODAY.getMonth()), monthIdx(lastMonday.getFullYear(), lastMonday.getMonth()));
+
+		const CHEV_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+		const CHEV_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+		const CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>';
+
+		const inst = { root, mode: 'choose', idx: DEFAULT_IDX, week: LATEST, pick: false, cal: null, lens: 'wow' };
+		const pref = readPref();
+		if (pref) {
+			inst.mode = 'saved';
+			inst.idx = FORMS.findIndex((f) => f.id === pref);
+		}
+		function resetWeekState(i) {
+			const list = weekTopics(i.week);
+			i.topics = list;
+			i.shuffle = { history: [], seen: new Set(), cur: list[0].id };
+			i.deck = { drawn: [], cur: null };
+			if (!list.some((t) => t.lens === i.lens)) i.lens = list[0].lens;
+		}
+
+		/* A week with too many topics has no readable map; the carousel skips that form. */
+		const mapOff = (i) => i.topics.length > mapMax;
+		const available = (i, f) => !(mapOff(i) && f.id === 'map');
+		function step(i, dir) {
+			let n = i.idx;
+			for (let k = 0; k < FORMS.length; k++) {
+				n = (n + dir + FORMS.length) % FORMS.length;
+				if (available(i, FORMS[n])) return n;
+			}
+			return i.idx;
+		}
+
+		function render(i, toast) {
+			const saved = readPref();
+			const chosen = FORMS[i.idx];
+			const form = available(i, chosen) ? chosen : FORMS.find((f) => f.id === 'lenses');
+			const swapped = form !== chosen;
+			const off = mapOff(i);
+
+			let head = '<p class="tx-kicker">What’s been on my mind lately</p>';
+			if (i.mode === 'choose') {
+				head +=
+					'<div class="tx-nav"><button class="tx-chev" data-act="prev" aria-label="Previous view">' + CHEV_L + '</button>' +
+					'<div class="tx-tabs" role="tablist">' +
+					FORMS.map((f, n) =>
+						available(i, f)
+							? '<button class="tx-tab" role="tab" data-act="tab" data-idx="' + n + '" aria-selected="' + (f === form) + '"><i></i>' + f.label + '</button>'
+							: '<button class="tx-tab tx-tab--off" role="tab" disabled aria-selected="false" title="Too many topics in week ' + weekNum(i.week) + ' for the map"><i></i>' + f.label + '</button>'
+					).join('') +
+					'</div><button class="tx-chev" data-act="next" aria-label="Next view">' + CHEV_R + '</button></div>';
+			} else {
+				head +=
+					'<span class="tx-saved">Your view: <b>' + chosen.label + '</b>' +
+					(swapped ? ' · <span class="tx-swap">showing ' + form.label + ' this week, the map gets crowded above ' + mapMax + ' topics</span>' : '') +
+					' · <button class="tx-link" data-act="change">Change view</button></span>';
+			}
+
+			const bar =
+				'<div class="tx-week"><span><b>Week ' + weekNum(i.week) + '</b> · ' + rangeLabel(i.week) + '</span>' +
+				'<span class="sep">|</span><button class="tx-link" data-act="pick" aria-expanded="' + i.pick + '">' + CAL + (i.pick ? 'Close' : 'Other week') + '</button>' +
+				(i.week !== LATEST ? '<span class="sep">·</span><button class="tx-link" data-act="latest">Latest</button>' : '') +
+				'</div>';
+
+			let foot = '';
+			if (i.mode === 'choose') {
+				foot =
+					'<div class="tx-foot"><span class="grp">' +
+					(toast
+						? '<span class="tx-toast">' + toast + '</span>'
+						: '<span>' + (off ? 'Three ways' : 'Four ways') + ' to browse the same ' + i.topics.length + ' topics' +
+						  (off ? ' — the map sits out this week, ' + i.topics.length + ' dots is too many to read' : '') + '. Swipe or use the arrows.</span>') +
+					(saved ? ' <button class="tx-link" data-act="forget">Forget saved view</button>' : '') +
+					'</span><span class="grp"><span>Saved in this browser only</span>' +
+					'<button class="tx-keep" data-act="keep">' + (saved === form.id ? 'Kept ✓' : 'Keep this view') + '</button></span></div>';
+			}
+
+			i.root.innerHTML =
+				'<div class="tx-head">' + head + '</div>' + bar + (i.pick ? calendar(i) : '') +
+				'<div class="tx-panel" data-form="' + form.id + '"></div>' + foot;
+
+			const panel = i.root.querySelector('.tx-panel');
+			({ shuffle: renderShuffle, map: renderMap, deck: renderDeck, lenses: renderLenses })[form.id](panel, i);
+			if (!reduceMotion) panel.classList.add('pop');
+			wire(i, form);
+		}
+
+		function wire(i, form) {
+			i.root.onclick = (e) => {
+				const b = e.target.closest('[data-act]');
+				if (!b || !i.root.contains(b)) return;
+				const act = b.dataset.act;
+				if (act === 'prev') { i.idx = step(i, -1); render(i); }
+				else if (act === 'next') { i.idx = step(i, 1); render(i); }
+				else if (act === 'tab') { i.idx = Number(b.dataset.idx); render(i); }
+				else if (act === 'keep') { writePref(form.id); render(i, 'Kept. Next time this page opens in ' + form.label + '.'); }
+				else if (act === 'forget') { writePref(null); render(i, 'Forgotten. The page will open with the carousel again.'); }
+				else if (act === 'change') { i.mode = 'choose'; render(i); }
+				else if (act === 'pick') {
+					i.pick = !i.pick;
+					if (i.pick) { const m = mondayFromKey(i.week); i.cal = { y: m.getFullYear(), m: m.getMonth() }; }
+					render(i);
+				} else if (act === 'latest') { i.week = LATEST; i.pick = false; resetWeekState(i); render(i); }
+				else if (act === 'cal-prev') {
+					const n = monthIdx(i.cal.y, i.cal.m) - 1;
+					if (n >= MIN_MONTH) { i.cal = { y: Math.floor(n / 12), m: n % 12 }; render(i); }
+				} else if (act === 'cal-next') {
+					const n = monthIdx(i.cal.y, i.cal.m) + 1;
+					if (n <= MAX_MONTH) { i.cal = { y: Math.floor(n / 12), m: n % 12 }; render(i); }
+				} else if (act === 'cal-latest') {
+					const m = mondayFromKey(LATEST);
+					i.cal = { y: m.getFullYear(), m: m.getMonth() };
+					i.week = LATEST; resetWeekState(i); render(i);
+				} else if (act === 'week') {
+					i.week = b.dataset.week; i.pick = false; resetWeekState(i);
+					if (!available(i, FORMS[i.idx]) && i.mode === 'choose') i.idx = FORMS.findIndex((f) => f.id === 'lenses');
+					render(i);
+				}
+			};
+
+			let sx = null;
+			const panel = i.root.querySelector('.tx-panel');
+			panel.onpointerdown = (e) => { sx = e.clientX; };
+			panel.onpointerup = (e) => {
+				if (sx == null || i.mode !== 'choose') return;
+				const dx = e.clientX - sx;
+				sx = null;
+				if (Math.abs(dx) > 60) { i.idx = step(i, dx < 0 ? 1 : -1); render(i); }
+			};
+			i.root.onkeydown = (e) => {
+				if (i.mode === 'choose' && e.target.closest('.tx-tabs') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+					e.preventDefault();
+					i.idx = step(i, e.key === 'ArrowRight' ? 1 : -1);
+					render(i);
+					i.root.querySelector('.tx-tab[aria-selected="true"]').focus();
+				}
+			};
+		}
+
+		/* ---- week picker ---- */
+		function calendar(i) {
+			const y = i.cal.y, m = i.cal.m;
+			const cur = monthIdx(y, m);
+			let html =
+				'<div class="tx-cal"><div class="cal-head"><b>' + MONTHS[m] + ' ' + y + '</b><div class="cal-nav">' +
+				'<button class="cal-btn" data-act="cal-prev" aria-label="Previous month"' + (cur <= MIN_MONTH ? ' disabled' : '') + '>' + CHEV_L + '</button>' +
+				'<button class="cal-btn" data-act="cal-latest">Latest</button>' +
+				'<button class="cal-btn" data-act="cal-next" aria-label="Next month"' + (cur >= MAX_MONTH ? ' disabled' : '') + '>' + CHEV_R + '</button>' +
+				'</div></div><div class="cal-grid"><span class="cal-h">W</span>' +
+				['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d) => '<span class="cal-h">' + d + '</span>').join('');
+			const first = mondayOf(new Date(y, m, 1));
+			for (let r = 0; r < 6; r++) {
+				const monday = new Date(first);
+				monday.setDate(first.getDate() + r * 7);
+				const key = weekKeyOf(monday);
+				const has = !!weeks[key];
+				html +=
+					'<button class="cal-w' + (has ? ' has' : '') + (key === i.week ? ' is-sel' : '') + '" data-act="' + (has ? 'week' : 'none') + '" data-week="' + key + '"' +
+					(has ? ' title="Week ' + weekNum(key) + ': ' + Object.keys(weeks[key]).length + ' topics"' : ' tabindex="-1" aria-disabled="true"') +
+					'>' + weekNum(key) + '<span class="dot"></span></button>';
+				for (let d = 0; d < 7; d++) {
+					const day = new Date(monday);
+					day.setDate(monday.getDate() + d);
+					html += '<span class="cal-d' + (day.getMonth() === m ? '' : ' out') + '">' + day.getDate() + '</span>';
+				}
+			}
+			return html + '</div><p class="cal-note">A dot marks a week with an overview.</p></div>';
+		}
+
+		/* ---- form 1: shuffle ---- */
+		function renderShuffle(panel, i) {
+			const s = i.shuffle, list = i.topics, n = list.length;
+			const draw = () => {
+				const t = list.find((x) => x.id === s.cur) || list[0];
+				s.cur = t.id;
+				s.seen.add(t.id);
+				panel.innerHTML =
+					'<div class="sh"><button class="sh-arrow" data-sh="go" aria-label="Shuffle to another topic">' + CHEV_L + '</button>' +
+					'<button class="sh-card" data-topic="' + t.id + '" data-week="' + i.week + '"><span class="t-eyebrow">' + lenses[t.lens].label + '</span>' +
+					'<span class="t-title">' + esc(t.title) + '</span><span class="t-hook">' + md(t.hook) + '</span>' +
+					'<span class="t-cta"><span>' + dotsHtml(t.w) + ' ' + timesLabel(t.w, i.week) + '</span><span>Open teaser →</span></span></button>' +
+					'<button class="sh-arrow" data-sh="go" aria-label="Shuffle to another topic">' + CHEV_R + '</button></div>' +
+					'<div class="sh-seen"><span>Seen ' + s.seen.size + ' of ' + n + '</span><div class="sh-bar"><span style="width:' + (s.seen.size / n) * 100 + '%"></span></div><span>shuffle, don’t scroll</span></div>';
+			};
+			draw();
+			panel.onclick = (e) => {
+				if (!e.target.closest('[data-sh]')) return;
+				s.history.push(s.cur);
+				if (s.history.length > Math.min(3, n - 1)) s.history.shift();
+				const pool = list.filter((t) => !s.history.includes(t.id) && t.id !== s.cur);
+				s.cur = (pool.length ? rnd(pool) : rnd(list.filter((t) => t.id !== s.cur))).id;
+				draw();
+				const card = panel.querySelector('.sh-card');
+				if (!reduceMotion && card) card.classList.add('pop');
+			};
+		}
+
+		/* ---- form 2: map ---- */
+		function renderMap(panel, i) {
+			const NS = 'http://www.w3.org/2000/svg';
+			const list = i.topics;
+			const present = new Set(list.map((t) => t.id));
+			panel.innerHTML =
+				'<svg class="sky" viewBox="0 0 660 540" role="group" aria-label="Topic map"></svg>' +
+				'<p class="sky-hint">Bigger dots surfaced more often in week ' + weekNum(i.week) + '. Lines connect topics that show up together. Hover for neighbours, click to read.</p>';
+			const svg = panel.querySelector('svg');
+			const edges = [], done = new Set(), nodes = {};
+			list.forEach((t) =>
+				(t.related || []).forEach((r) => {
+					if (!present.has(r)) return;
+					const key = [t.id, r].sort().join('|');
+					if (done.has(key)) return;
+					done.add(key);
+					const l = document.createElementNS(NS, 'line');
+					const b = byId[r];
+					l.setAttribute('x1', t.x); l.setAttribute('y1', t.y - 10);
+					l.setAttribute('x2', b.x); l.setAttribute('y2', b.y - 10);
+					l.setAttribute('class', 'edge');
+					l.dataset.a = t.id; l.dataset.b = r;
+					svg.appendChild(l); edges.push(l);
+				})
+			);
+			list.forEach((t) => {
+				const r = 13 + t.w * 5, cy = t.y - 10;
+				const g = document.createElementNS(NS, 'g');
+				g.setAttribute('class', 'node');
+				g.setAttribute('tabindex', '0');
+				g.setAttribute('role', 'button');
+				g.setAttribute('aria-label', t.title);
+				const c = document.createElementNS(NS, 'circle');
+				c.setAttribute('cx', t.x); c.setAttribute('cy', cy); c.setAttribute('r', r);
+				const ring = document.createElementNS(NS, 'circle');
+				ring.setAttribute('cx', t.x); ring.setAttribute('cy', cy); ring.setAttribute('r', r + 5); ring.setAttribute('class', 'ring');
+				const tx = document.createElementNS(NS, 'text');
+				tx.setAttribute('x', t.x); tx.setAttribute('y', cy + r + 14);
+				tx.textContent = t.title;
+				g.appendChild(c); g.appendChild(ring); g.appendChild(tx);
+				svg.appendChild(g);
+				nodes[t.id] = g;
+				const on = () => {
+					svg.classList.add('has-focus');
+					g.classList.add('is-active');
+					(t.related || []).forEach((id) => nodes[id] && nodes[id].classList.add('is-near'));
+					edges.forEach((l) => { if (l.dataset.a === t.id || l.dataset.b === t.id) l.classList.add('is-lit'); });
+				};
+				const off = () => {
+					svg.classList.remove('has-focus');
+					g.classList.remove('is-active');
+					Object.values(nodes).forEach((n) => n.classList.remove('is-near'));
+					edges.forEach((l) => l.classList.remove('is-lit'));
+				};
+				g.addEventListener('mouseenter', on); g.addEventListener('mouseleave', off);
+				g.addEventListener('focus', on); g.addEventListener('blur', off);
+				g.addEventListener('keydown', (e) => {
+					if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+				});
+				g.dataset.topic = t.id;
+				g.dataset.week = i.week;
+			});
+		}
+
+		/* ---- form 3: deck ---- */
+		function renderDeck(panel, i) {
+			const d = i.deck, list = i.topics;
+			panel.innerHTML =
+				'<div class="dk"><div class="deck"><div class="sc s1"></div><div class="sc s2"></div>' +
+				'<button class="flip' + (d.cur ? ' is-flipped' : '') + '" data-dk="flip" aria-label="Draw a card">' +
+				'<div class="face face--back"><div class="b-mark">?</div><div class="b-title">Draw a card</div><div class="b-sub">' + list.length + ' topics from week ' + weekNum(i.week) + '</div></div>' +
+				'<div class="face face--front"></div></button></div>' +
+				'<div class="dk-side"><div class="dk-actions"><button class="tx-btn tx-btn--primary" data-dk="draw">' + (d.cur ? 'Draw another' : 'Draw a card') + '</button>' +
+				'<button class="tx-btn" data-dk="read"' + (d.cur ? '' : ' hidden') + '>Read the teaser</button></div>' +
+				'<div><p class="collected-label">Drawn so far</p><div class="collected"></div></div></div></div>';
+			const flip = panel.querySelector('.flip');
+			const front = panel.querySelector('.face--front');
+			const drawBtn = panel.querySelector('[data-dk="draw"]');
+			const readBtn = panel.querySelector('[data-dk="read"]');
+			const coll = panel.querySelector('.collected');
+			const paint = () => {
+				if (d.cur) {
+					const t = byId[d.cur];
+					front.innerHTML =
+						'<span class="t-eyebrow">' + lenses[t.lens].label + '</span><span class="t-title">' + esc(t.title) + '</span>' +
+						'<span class="t-hook">' + md(t.hook) + '</span><span class="t-cta">Read the teaser →</span>';
+				}
+				coll.innerHTML = d.drawn.map((id) => '<button class="mini" data-topic="' + id + '" data-week="' + i.week + '">' + esc(byId[id].title) + '</button>').join('');
+			};
+			const draw = () => {
+				const remaining = list.filter((t) => !d.drawn.includes(t.id));
+				const next = remaining.length ? rnd(remaining) : rnd(list.filter((t) => t.id !== d.cur).concat(list.length === 1 ? list : []));
+				const apply = () => {
+					d.cur = next.id;
+					if (!d.drawn.includes(next.id)) d.drawn.push(next.id);
+					paint();
+					flip.classList.add('is-flipped');
+					readBtn.hidden = false;
+					drawBtn.textContent = 'Draw another';
+				};
+				if (flip.classList.contains('is-flipped') && !reduceMotion) {
+					flip.classList.remove('is-flipped');
+					setTimeout(apply, 260);
+				} else apply();
+			};
+			paint();
+			panel.onclick = (e) => {
+				const b = e.target.closest('[data-dk]');
+				if (!b) return;
+				const act = b.dataset.dk;
+				if (act === 'draw') draw();
+				else if (act === 'read' && d.cur) window.openTeaser(d.cur, i.week);
+				/* a face-down card draws, a face-up card opens its teaser */
+				else if (act === 'flip') { if (d.cur && flip.classList.contains('is-flipped')) window.openTeaser(d.cur, i.week); else draw(); }
+			};
+		}
+
+		/* ---- form 4: lenses ---- */
+		function renderLenses(panel, i) {
+			const list = i.topics;
+			const paint = () => {
+				const tiles = list.filter((t) => t.lens === i.lens);
+				panel.innerHTML =
+					'<div class="ls-chips">' +
+					Object.entries(lenses).map(([k, v]) => '<button class="lens" data-ls="' + k + '" aria-pressed="' + (k === i.lens) + '">' + v.label + '</button>').join('') +
+					'<button class="lens lens--surprise" data-ls="surprise">Surprise me</button></div>' +
+					'<p class="ls-intro">' + lenses[i.lens].intro + '</p>' +
+					(tiles.length
+						? '<div class="tiles">' + tiles.map((t) =>
+								'<button class="tile" data-topic="' + t.id + '" data-week="' + i.week + '"><span class="t-title">' + esc(t.title) + '</span><span class="t-hook">' + md(t.hook) + '</span></button>'
+						  ).join('') + '</div>'
+						: '<p class="tx-empty">Nothing under this lens in week ' + weekNum(i.week) + '. Try another lens or another week.</p>');
+			};
+			paint();
+			panel.onclick = (e) => {
+				const b = e.target.closest('[data-ls]');
+				if (!b) return;
+				if (b.dataset.ls === 'surprise') {
+					window.openTeaser(rnd(list).id, i.week);
+					return;
+				}
+				i.lens = b.dataset.ls;
+				paint();
+			};
+		}
+
+		/* start once every helper above exists */
+		resetWeekState(inst);
+		render(inst);
+	})();
+</script>
+
+<style is:global>
+	.tx { container-type: inline-size; display: grid; gap: 0.7rem; }
+	.tx-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; }
+	.tx-head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+	.tx-nav { display: flex; align-items: center; gap: 0.3rem; }
+	.tx-chev { border: 0; background: transparent; color: var(--color-aside); cursor: pointer; padding: 0.15rem; border-radius: 4px; display: inline-flex; }
+	.tx-chev svg { width: 15px; height: 15px; }
+	.tx-chev:hover { color: var(--color-ink); background: var(--color-hover); }
+	.tx-tabs { display: flex; gap: 0.15rem; }
+	.tx-tab { border: 0; background: transparent; padding: 0.25rem 0.5rem; border-radius: 999px; font: inherit; font-size: 0.78rem; font-weight: 500; color: var(--color-aside); display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+	.tx-tab i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-line); display: inline-block; transition: background 0.15s, transform 0.15s; }
+	.tx-tab:hover { color: var(--color-ink); }
+	.tx-tab[aria-selected='true'] { color: var(--color-ink); font-weight: 600; }
+	.tx-tab[aria-selected='true'] i { background: var(--color-accent); transform: scale(1.25); }
+	.tx-tab--off { color: var(--color-line); cursor: default; text-decoration: line-through; }
+	.tx-tab--off:hover { color: var(--color-line); }
+	.tx-swap { color: var(--color-aside); }
+	.tx-saved { font-size: 0.78rem; color: var(--color-aside); }
+	.tx-saved b { color: var(--color-ink); }
+	.tx-link { border: 0; background: transparent; padding: 0; font: inherit; color: var(--color-accent); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; }
+	.tx-link svg { width: 13px; height: 13px; }
+	.tx-link:hover { color: var(--color-accent-hover); }
+	.tx-week { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--color-aside); }
+	.tx-week b { color: var(--color-ink); }
+	.tx-week .sep { color: var(--color-line); }
+	.tx-panel { border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 1rem; }
+	@keyframes tx-pop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+	.tx-panel.pop, .sh-card.pop { animation: tx-pop 0.22s ease-out; }
+	.tx-foot { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap; font-size: 0.74rem; color: var(--color-aside); }
+	.tx-foot .grp { display: inline-flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+	.tx-toast { color: var(--color-amber-dark); background: var(--color-amber-soft); border-radius: 999px; padding: 0.1rem 0.6rem; }
+	.tx-keep { border: 1px solid var(--color-border); background: var(--color-paper); border-radius: 999px; padding: 0.15rem 0.7rem; font: inherit; font-size: 0.74rem; color: var(--color-ink); cursor: pointer; }
+	.tx-keep:hover { background: var(--color-hover); }
+	.tx-btn { border: 1px solid var(--color-border); background: var(--color-paper); border-radius: 6px; padding: 0.3rem 0.75rem; font: inherit; font-size: 0.8rem; color: var(--color-ink); cursor: pointer; }
+	.tx-btn:hover { background: var(--color-hover); }
+	.tx-btn--primary { background: var(--color-accent); border-color: var(--color-accent); color: #fff; font-weight: 600; }
+	.tx-btn--primary:hover { background: var(--color-accent-hover); border-color: var(--color-accent-hover); }
+	.tx-empty, .tx-nojs { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
+	.tx-nojs-list { font-size: 0.85rem; color: var(--color-muted); margin: 0.5rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+	.tx-nojs-list b { color: var(--color-ink); }
+
+	/* week picker */
+	.tx-cal { border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 0.7rem 0.8rem; display: grid; gap: 0.5rem; max-width: 20rem; }
+	.cal-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+	.cal-nav { display: inline-flex; gap: 0.2rem; align-items: center; }
+	.cal-btn { border: 0; background: transparent; color: var(--color-aside); cursor: pointer; border-radius: 4px; padding: 0.1rem 0.35rem; font: inherit; font-size: 0.72rem; display: inline-flex; align-items: center; }
+	.cal-btn svg { width: 13px; height: 13px; }
+	.cal-btn:hover:not(:disabled) { color: var(--color-ink); background: var(--color-hover); }
+	.cal-btn:disabled { opacity: 0.35; cursor: default; }
+	.cal-grid { display: grid; grid-template-columns: 1.6rem repeat(7, 1fr); gap: 2px; }
+	.cal-h { font-size: 0.62rem; text-align: center; color: var(--color-aside); font-weight: 600; }
+	.cal-d { font-size: 0.72rem; text-align: center; color: var(--color-muted); aspect-ratio: 1; display: grid; place-items: center; }
+	.cal-d.out { color: var(--color-line); }
+	.cal-w { position: relative; font: inherit; font-size: 0.7rem; font-weight: 600; color: var(--color-line); background: transparent; border: 0; border-radius: 4px; aspect-ratio: 1; display: grid; place-items: center; cursor: default; }
+	.cal-w .dot { position: absolute; bottom: 2px; width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+	.cal-w.has { color: var(--color-muted); cursor: pointer; }
+	.cal-w.has .dot { background: var(--color-accent); }
+	.cal-w.has:hover { background: var(--color-hover); color: var(--color-ink); }
+	.cal-w.is-sel { background: var(--color-amber-soft); color: var(--color-amber-dark); }
+	.cal-note { font-size: 0.68rem; color: var(--color-aside); margin: 0; }
+
+	/* cards shared by the forms */
+	.t-title { font-size: 1.05rem; font-weight: 600; color: var(--color-ink); }
+	.t-hook { font-size: 0.85rem; color: var(--color-muted); line-height: 1.5; }
+	.t-cta { font-size: 0.72rem; color: var(--color-accent); font-weight: 600; display: flex; justify-content: space-between; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+	.t-cta .dots { vertical-align: middle; }
+
+	/* shuffle */
+	.sh { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.5rem; align-items: center; }
+	.sh-arrow { border: 1px solid var(--color-border); background: var(--color-paper); border-radius: 999px; width: 2rem; height: 2rem; display: grid; place-items: center; color: var(--color-aside); cursor: pointer; }
+	.sh-arrow svg { width: 14px; height: 14px; }
+	.sh-arrow:hover { background: var(--color-hover); color: var(--color-ink); }
+	.sh-card { text-align: left; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-card); padding: 0.9rem 1rem; min-height: 10.5rem; display: flex; flex-direction: column; gap: 0.4rem; cursor: pointer; font: inherit; }
+	.sh-card .t-cta { margin-top: auto; }
+	.sh-seen { display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; color: var(--color-aside); margin-top: 0.6rem; }
+	.sh-bar { flex: 1; height: 3px; background: var(--color-hover); border-radius: 999px; overflow: hidden; }
+	.sh-bar span { display: block; height: 100%; background: var(--color-accent); transition: width 0.25s ease-out; }
+
+	/* map */
+	.sky { width: 100%; height: auto; }
+	.sky .edge { stroke: var(--color-line); stroke-width: 1; opacity: 0.5; }
+	.sky .edge.is-lit { stroke: var(--color-coral); opacity: 1; stroke-width: 1.5; }
+	.sky .node { cursor: pointer; }
+	.sky .node circle { fill: var(--color-amber-soft); stroke: var(--color-amber-dark); stroke-width: 1.5; }
+	.sky .node text { fill: var(--color-ink); font-size: 11.5px; font-weight: 500; text-anchor: middle; pointer-events: none; }
+	.sky .node .ring { fill: none; stroke: var(--color-coral); stroke-width: 1.5; opacity: 0; }
+	.sky .node:hover .ring, .sky .node:focus-visible .ring, .sky .node.is-active .ring { opacity: 1; }
+	.sky .node:focus-visible { outline: none; }
+	.sky.has-focus .node:not(.is-active):not(.is-near) { opacity: 0.35; }
+	.sky-hint { font-size: 0.72rem; color: var(--color-aside); margin: 0.4rem 0 0; }
+
+	/* deck */
+	.dk { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; align-items: start; }
+	@container (max-width: 480px) { .dk { grid-template-columns: minmax(0, 1fr); } .sky .node text { font-size: 17px; } }
+	.deck { position: relative; height: 11rem; perspective: 1000px; }
+	.deck .sc { position: absolute; inset: 0; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); }
+	.deck .sc.s1 { transform: translate(6px, 6px) rotate(1.5deg); }
+	.deck .sc.s2 { transform: translate(3px, 3px) rotate(-1deg); }
+	.flip { position: absolute; inset: 0; border: 0; background: transparent; padding: 0; transform-style: preserve-3d; transition: transform 0.4s; cursor: pointer; }
+	.flip.is-flipped { transform: rotateY(180deg); }
+	.face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.35rem; text-align: left; }
+	.face--back { background: var(--color-paper); align-items: center; justify-content: center; text-align: center; color: var(--color-muted); }
+	.face--back .b-mark { width: 40px; height: 40px; border-radius: 50%; background: var(--color-amber-soft); border: 1.5px solid var(--color-amber-dark); display: grid; place-items: center; color: var(--color-amber-dark); font-weight: 700; margin-bottom: 0.3rem; }
+	.face--back .b-title { font-weight: 600; color: var(--color-ink); }
+	.face--back .b-sub { font-size: 0.72rem; }
+	.face--front { background: var(--color-card); transform: rotateY(180deg); }
+	.face--front .t-title { font-size: 1rem; }
+	.face--front .t-hook { font-size: 0.84rem; }
+	.face--front .t-cta { margin-top: auto; }
+	.dk-side { display: grid; gap: 0.8rem; }
+	.dk-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+	.collected-label { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-aside); margin: 0 0 0.3rem; }
+	.collected { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+	.collected .mini { font-size: 0.72rem; border: 1px solid var(--color-border); background: var(--color-paper); border-radius: 999px; padding: 0.12rem 0.55rem; color: var(--color-muted); cursor: pointer; font-family: inherit; }
+	.collected .mini:hover { background: var(--color-hover); color: var(--color-ink); }
+
+	/* lenses */
+	.ls-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+	.lens { border: 1px solid var(--color-border); background: var(--color-paper); border-radius: 999px; padding: 0.2rem 0.7rem; font: inherit; font-size: 0.76rem; color: var(--color-muted); cursor: pointer; }
+	.lens[aria-pressed='true'] { background: var(--color-amber-soft); border-color: var(--color-amber-dark); color: var(--color-amber-dark); font-weight: 600; }
+	.lens--surprise { border-style: dashed; }
+	.ls-intro { font-size: 0.78rem; color: var(--color-aside); margin: 0.6rem 0; }
+	.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+	@container (max-width: 480px) { .tiles { grid-template-columns: minmax(0, 1fr); } }
+	.tile { text-align: left; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-card); padding: 0.65rem 0.8rem; display: grid; gap: 0.2rem; cursor: pointer; font: inherit; }
+	.tile:hover { background: var(--color-hover); }
+	.tile .t-title { font-size: 0.92rem; }
+	.tile .t-hook { font-size: 0.8rem; }
+
+	@media (prefers-reduced-motion: reduce) {
+		.tx-panel.pop, .sh-card.pop { animation: none; }
+		.flip, .sh-bar span { transition: none; }
+	}
+</style>

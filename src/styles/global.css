@@ -12,6 +12,14 @@
 	--color-border: oklch(90% 0.005 70);
 	--color-accent: oklch(56% 0.13 45);
 	--color-accent-hover: oklch(46% 0.14 42);
+
+	/* Topic Explorer */
+	--color-line: oklch(85% 0.006 70);
+	--color-hover: oklch(94% 0.006 75);
+	--color-annot: oklch(96% 0.006 75);
+	--color-amber-soft: oklch(95% 0.035 75);
+	--color-amber-dark: oklch(48% 0.09 70);
+	--color-coral: oklch(62% 0.14 40);
 }
 
 .prose table {

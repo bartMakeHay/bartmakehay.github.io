@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import { formatDate } from '../lib/format-date';
+import TopicExplorer from '../components/TopicExplorer.astro';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -14,7 +15,11 @@ const posts = (await getCollection('posts')).sort(
 		<p class="mt-3 max-w-[60ch] text-sm text-muted">
 			Bart's blog on software architecture, tinkering, and making hay.
 		</p>
-		<ul class="mt-8 space-y-6">
+		<div class="mt-8">
+			<TopicExplorer />
+		</div>
+		<p class="mt-10 text-xs font-semibold tracking-wide text-aside uppercase">Posts</p>
+		<ul class="mt-4 space-y-6">
 			{posts.map((post) => (
 				<li>
 					<a href={`/posts/${post.id}/`} class="text-base font-semibold text-ink hover:text-accent">

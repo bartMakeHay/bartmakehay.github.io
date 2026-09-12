@@ -1,0 +1,39 @@
+---
+/**
+ * Inline teaser link for use inside a post (form 5).
+ *
+ *   <Topic id="para">PARA</Topic>
+ *   <Topic id="para" />            → uses the card's own title
+ *
+ * Opens the shared teaser dialog, which PostLayout includes on every post.
+ */
+import topicsData from '../data/topics.json';
+
+interface Props {
+	id: string;
+}
+
+const { id } = Astro.props;
+const topic = topicsData.topics.find((t) => t.id === id);
+if (!topic) throw new Error(`Unknown topic id "${id}" — check src/data/topics.json`);
+---
+
+<button type="button" class="topic-link" data-topic={id} aria-haspopup="dialog">
+	<slot>{topic.title}</slot>
+</button>
+
+<style is:global>
+	.topic-link {
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font: inherit;
+		color: var(--color-accent);
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-style: dotted;
+		text-decoration-thickness: 1.5px;
+		text-underline-offset: 3px;
+	}
+	.topic-link:hover { color: var(--color-accent-hover); text-decoration-style: solid; }
+</style>

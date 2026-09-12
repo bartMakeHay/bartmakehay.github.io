@@ -1,6 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import Comments from '../components/Comments.astro';
+import TeaserDialog from '../components/TeaserDialog.astro';
 import { formatDate } from '../lib/format-date';
 
 interface Props {
@@ -29,4 +30,5 @@ const formattedDate = formatDate(date);
 			<Comments />
 		</div>
 	</article>
+	<TeaserDialog />
 </Layout>

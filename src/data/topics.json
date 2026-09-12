@@ -1,0 +1,979 @@
+{
+ "generated": "90_Meta/scripts/teasers-naar-topics-json.py",
+ "mapMax": 15,
+ "lenses": {
+  "wow": {
+   "label": "Ways of working",
+   "intro": "How I organise my days, my notes and my goals."
+  },
+  "arch": {
+   "label": "Architecture practice",
+   "intro": "How I frame, model and evaluate solutions in a large programme."
+  },
+  "ai": {
+   "label": "AI-assisted workflows",
+   "intro": "Where an AI assistant does real work in my routine, and the guardrails around it."
+  }
+ },
+ "topics": [
+  {
+   "id": "4dx",
+   "title": "4DX",
+   "lens": "wow",
+   "hook": "Four disciplines to get the important thing done while the whirlwind rages.",
+   "what": "The 4 Disciplines of Execution is a recipe for delivering one wildly important goal while day-to-day work keeps pulling at you: pick the goal, act on lead measures you can influence, keep a visible scoreboard, and hold a short weekly cadence of accountability. It matters because most goals fail on execution, not on ambition.",
+   "how": "I mapped all four onto my notes vault: one goal per quarterly planning cycle, lead measures as fields in my weekly note, a scoreboard that computes itself from those fields, and a Friday review that closes the week. The honest part is a field that records whether the review actually happened.",
+   "related": [
+    "distill",
+    "agents",
+    "archimate"
+   ],
+   "x": 67,
+   "y": 52
+  },
+  {
+   "id": "agents",
+   "title": "Agent workflows",
+   "lens": "ai",
+   "hook": "My day and week run as a chain of skills, with me between the links.",
+   "what": "An agent workflow chains small, named capabilities (open the day, prepare the stand-up, distil today's meetings, close the day) into a routine an AI assistant can run, with a human confirmation between steps. It matters because the value is not one clever prompt; it is a repeatable process that stays inside the rules you set.",
+   "how": "I have grown a set of slash-command skills around my day and week notes, connected to my planning tool through an MCP server, and I let parallel reading agents distil several meeting transcripts at once. Guardrails matter as much as the skills: read-only access where it must be, path-scoped commits, and a log of every session in the day note.",
+   "related": [
+    "distill",
+    "archimate",
+    "4dx"
+   ],
+   "x": 376,
+   "y": 44
+  },
+  {
+   "id": "archimate",
+   "title": "ArchiMate as code",
+   "lens": "arch",
+   "hook": "Diagrams generated from a spec, checked by rules, versioned in git.",
+   "what": "Instead of dragging boxes, I describe an [ArchiMate](https://en.wikipedia.org/wiki/ArchiMate) view as a specification and generate the SVG from it. The layout is still a judgement call, but the model, the notation rules and the geometry checks are enforced rather than remembered. It matters because a diagram you can diff and regenerate ages differently from one you drew.",
+   "how": "Every diagram on this blog comes out of that route. This week it carried four views of an event-driven invoicing chain and a context map of my own tooling. What I do not show is the mechanics; what I do show is the effect: consistent views, reviewable changes, and an agent that can propose a first draft from a conversation.",
+   "related": [
+    "agents",
+    "distill",
+    "4dx"
+   ],
+   "x": 486,
+   "y": 53
+  },
+  {
+   "id": "archsync",
+   "title": "An architecture sync as a topic pipeline",
+   "lens": "arch",
+   "hook": "A fortnightly architecture sync only works if topics arrive typed, capped and pre-decided, and leave as entries in a decision log.",
+   "what": "An architecture sync that runs on slide decks and a transcript produces discussion, not decisions. Modelled on a review board it becomes a pipeline: topics arrive typed (inform, decide, or work through), capped at three or four decision topics per ninety minutes, and leave as decision-log entries with the alternatives that were weighed. The log records why, not just what.",
+   "how": "The topic page template asks explicitly for weighed alternatives, because the first observation was that architects converged on one option without any. For an inform-type topic I fill in the decisions beforehand; if someone sees a knot, that is the signal to promote it to a decision topic. After each sync the wiki stays the source of truth and my pipeline follows it, including the topics that went unspoken.",
+   "related": [
+    "agents",
+    "archimate",
+    "distill"
+   ],
+   "x": 506,
+   "y": 171
+  },
+  {
+   "id": "bigerd",
+   "title": "Reading a 4,000-entity data model",
+   "lens": "arch",
+   "hook": "You cannot read an ERD with thousands of tables: start from what is actually used and grow two levels at a time.",
+   "what": "A packaged system's data model with thousands of entities cannot be read as a whole, and exporting all of it does not help. The way in is by usage: start from the entities that are actually populated, add relations one or two levels out, repeat. The trap is wanting to filter on functional categories that exist nowhere in the schema; an ERD shows structural relations, the semantics need an external source.",
+   "how": "An analytics team without system access delivered the minimal set of used entities as the starting point, and the phased ERD grew from there as a promise rather than a deliverable. Naming the difference between filtering by name and filtering by functional concept, which had never been made explicit, settled most of the discussion.",
+   "related": [
+    "4dx",
+    "agents",
+    "code"
+   ],
+   "x": 613,
+   "y": 285
+  },
+  {
+   "id": "calm",
+   "title": "CALM",
+   "lens": "arch",
+   "hook": "Architecture as JSON that a pipeline can validate.",
+   "what": "[CALM](https://calm.finos.org), the Common Architecture Language Model from FINOS, describes an architecture as machine-readable nodes, relationships and controls, versioned next to the code and validated in CI. The promise: architectural drift becomes a failing check instead of a stale diagram nobody trusts.",
+   "how": "I discussed it with a colleague who applied it to an enabler feature, semi-automated secret rotation; that case is now my reference for what the model captures and what it leaves out. I am weighing it as a way to turn our written integration patterns into reference architecture as code, paired with [OpenSpec](https://openspec.dev) for the change workflow. My key finding so far: CALM governs the architecture around a system, not the configuration inside it, so a pilot has to be chosen accordingly.",
+   "related": [
+    "agents",
+    "ledger",
+    "4dx"
+   ],
+   "x": 486,
+   "y": 221
+  },
+  {
+   "id": "capabilities",
+   "title": "Business capabilities as the stable coat-rack",
+   "lens": "arch",
+   "hook": "Processes shift, capabilities stay: hang integrations, documentation, vocabulary and even architect ownership on the thing that does not move.",
+   "what": "Processes get redesigned, teams get reorganised, products get replaced. Business capabilities describe what an organisation does regardless of how, which makes them the one structure stable enough to hang everything else on: integration components positioned against level-two capabilities, documentation and vocabulary organised by capability, and, the boldest use, solution architects assigned to capabilities rather than to teams.",
+   "how": "I pushed to rename the wiki's process tree to business capabilities under the value streams and to position every integration component against it. Later, in a governance conversation that started from too many forums and too slow decisions, the same coat-rack became the proposal: inside a capability the architect owns quality, data and performance; across capabilities the architecture sync decides.",
+   "related": [
+    "agents",
+    "distill",
+    "eventing"
+   ],
+   "x": 614,
+   "y": 220
+  },
+  {
+   "id": "certainty",
+   "title": "A certainty ladder for architecture statements",
+   "lens": "arch",
+   "hook": "Not every architecture sentence is a decision: five rungs of certainty, each with the forum that raises it, and a precedence rule where chronology gives the wrong answer.",
+   "what": "Architecture documents mix decided positions, challenges dressed as statements, and validations still open. A certainty ladder gives every statement one of five rungs and names the forum that can raise it; a statement climbs only when it gets its own page with exactly one sharp decided sentence. When sources conflict, chronology is the wrong tie-breaker: the review board wins on the architectural how, the use case on functional scope, the building block yields to both.",
+   "how": "Distilling one steering page into twenty-three decided positions, sixteen challenges and twenty open validations showed why the open ones were open: they had no page of their own. The ladder is now a vault-wide convention, and the topic playbook got a brevity rule to go with it.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 589,
+   "y": 335
+  },
+  {
+   "id": "code",
+   "title": "CODE",
+   "lens": "wow",
+   "hook": "Capture, Organize, Distill, Express: the process that fills the cabinet.",
+   "what": "Where PARA is the cabinet, CODE is the workflow that moves knowledge through it: capture what resonates, organise it by actionability, distil it to its essence, and express it in something you make. The last step is the point: notes that never leave the vault are storage, not knowledge.",
+   "how": "My days run through it almost literally. Meeting transcripts and raw notes are captured into the day note, organised onto a ledger code, distilled into decisions, actions and considerations at the end of the day, and expressed here, on this blog, once the client-specific detail has been removed.",
+   "related": [
+    "distill",
+    "agents",
+    "framing"
+   ],
+   "x": 74,
+   "y": 105
+  },
+  {
+   "id": "commitgate",
+   "title": "The commitment gate",
+   "lens": "wow",
+   "hook": "Capture everything, commit only to what fits: a weekly ceiling, four triage classes, and the question who kept a task alive.",
+   "what": "Capturing without a limit inflates work in progress; the discipline sits at the moment you commit. A commitment gate asks four questions of every captured action: does it fit under this week's ceiling of deep-work slots, is it a next action or a project, is the hand mine, and does it need capacity or a calendar slot. Everything else is converted into backlog work, parked as waiting-for, or left without a due date on purpose.",
+   "how": "Every daily throughput advice classifies new actions into commit, convert, waiting-for and due-less backlog, against a ceiling of roughly eight to twelve committed slots a week. Missed due dates are named as pushed forward, never silently dropped, and a thinning run measures the return rate of what I let go: too low means I let go too little, too high means I cut too sharp.",
+   "related": [
+    "distill",
+    "agents",
+    "code"
+   ],
+   "x": 68,
+   "y": 218
+  },
+  {
+   "id": "customgov",
+   "title": "Governing package customisation",
+   "lens": "arch",
+   "hook": "Buy before build only works if someone counts the gaps: classify every customisation before it lands.",
+   "what": "Buy before build is easy to say and hard to hold: every gap between package and business gets closed by a customisation nobody weighed. Governance means qualifying each gap as configuration or customisation at the granularity of a solution intent, keeping the list explicit with a link to the technical analysis, and classifying every item A, B or C: escalate, discuss, or merely inform.",
+   "how": "The classification runs in the architecture sync and the review board only sees results; the same A/B/C scheme turned out to fit security exceptions as well. The principle underneath, the lowest possible layer of customisation, only sticks when the business is part of the package vision rather than briefed on it afterwards.",
+   "related": [
+    "agents",
+    "code",
+    "commitgate"
+   ],
+   "x": 482,
+   "y": 287
+  },
+  {
+   "id": "distill",
+   "title": "Meeting distillation",
+   "lens": "ai",
+   "hook": "From a meeting transcript to actions, decisions and open questions, the same day.",
+   "what": "Most meeting notes die as prose. Distillation turns a transcript into a fixed set of outputs: actions with an owner, decisions, considerations to think about, and items I am waiting on from others, each routed to the project it belongs to. It matters because the value of a meeting is what changes afterwards.",
+   "how": "My end-of-day routine matches the day's Copilot transcripts to the meetings in my day note, lets parallel reading agents distil each one, merges in my own raw notes alongside the transcript, and asks me to confirm names and ambiguities before anything is written. A midday run on six meetings at once is now routine.",
+   "related": [
+    "agents",
+    "archimate",
+    "4dx"
+   ],
+   "x": 272,
+   "y": 52
+  },
+  {
+   "id": "eventing",
+   "title": "Change data capture vs a publication gateway",
+   "lens": "arch",
+   "hook": "Raw CDC buys visibility, not guarantees. A gateway trades some latency for a contract.",
+   "what": "In an event-driven landscape you can publish what changed in a database (change data capture) or publish what a system means to say (a publication gateway with an explicit publication entity). The first is cheap and shows everything; the second costs a little latency and gives consumers a contract, an ordering you can reason about and a place to put idempotency. The choice decides where correctness lives: at the source or at the consumer.",
+   "how": "Across a year of integration designs I keep landing on the same set: asynchronous by default across capability boundaries, one topic the sender publishes to once, consumers that filter and upsert idempotently, and synchronous validation only where a caller needs an answer now. I write each variant as a short, self-contained decision with the rejected alternatives next to it, because the asynchronous route often turns out to be a fallback path rather than a competitor.",
+   "related": [
+    "framing",
+    "distill",
+    "agents"
+   ],
+   "x": 501,
+   "y": 104
+  },
+  {
+   "id": "flow",
+   "title": "A backlog is not a queue",
+   "lens": "wow",
+   "hook": "Most open items older than a year, yet the fastest throughput in the team: the list is a memory, not a work queue.",
+   "what": "A throughput analysis of a backlog answers one question: at the current pace, how long until today's open items are gone? When the answer is measured in years, the list has stopped being a work queue and become a memory aid, and owning an item is no longer the same as executing it. That is not a failure of discipline; it is a signal that the bottleneck sits at the commit, not at the capture.",
+   "how": "I measured my own inflow and throughput (roughly ten new actions for every one closed) and put two gates around the list: a form gate at the entry, where only real commitments get a checkbox and considerations stay plain bullets, and a thinning run at the exit that asks who kept an item alive. Recidivism by me is guilt to let go of; recidivism by others is a structural signal.",
+   "related": [
+    "agents",
+    "distill",
+    "framing"
+   ],
+   "x": 57,
+   "y": 170
+  },
+  {
+   "id": "framing",
+   "title": "Architectural framing before estimation",
+   "lens": "arch",
+   "hook": "One consideration and one view per planning objective, before teams put numbers on it.",
+   "what": "Architectural framing is the short piece of work between a planning objective and the teams' estimates: one written consideration and one solution view per sub-objective, hung on the business capabilities it touches. It matters because estimates made without a target picture are guesses about integration, and integration is where the cost hides.",
+   "how": "Before each planning increment I block solo time per objective, sketch the solution view, list the enabler features underneath the functional ones and hand the whole thing to the solution architects as a starting point, not a verdict. Two rules I hold myself to: no estimation starts without a target architecture, and a framing without an owner and a date on the architecture sync agenda is not done.",
+   "related": [
+    "distill",
+    "agents",
+    "eventing"
+   ],
+   "x": 592,
+   "y": 56
+  },
+  {
+   "id": "hygiene",
+   "title": "Vault hygiene you can measure",
+   "lens": "wow",
+   "hook": "Drift shows up in numbers before it shows up in trouble.",
+   "what": "A knowledge vault drifts quietly: statuses spelled two ways, types outside the agreed list, review dates long expired, links whose anchors no longer exist. None of it hurts today; all of it erodes the queries and automations that rely on the conventions. So count first: an audit query that returns numbers turns hygiene from a feeling into a backlog with a size.",
+   "how": "A frontmatter audit gave me the numbers (a couple of hundred notes off-convention per field), and each finding got two answers: a one-off cleanup and a structural guard, such as setting properties through the CLI, a periodic review-due query, or a fourteen-day inbox threshold built into the daily start. Drift between a skill's source note and its runtime copy gets the same treatment: a check at session start, not a hope.",
+   "related": [
+    "4dx",
+    "distill",
+    "agents"
+   ],
+   "x": 182,
+   "y": 170
+  },
+  {
+   "id": "journal",
+   "title": "The three-layer work journal",
+   "lens": "wow",
+   "hook": "One page per week, one per day, four markers, and the week prepared from the calendar before Monday starts.",
+   "what": "The journal has three layers: a week note with open tasks, timesheet preparation and a synthesis; a day note with a heading per activity carrying time, duration and work item; and a reference layer with mappings, prompts and checklists. Four inline markers separate an action (owner and due), a decision, an open question and a risk from ordinary thoughts, so Friday's synthesis becomes almost free.",
+   "how": "A week-preparation workflow builds next week's day notes from the calendar (one heading per event, focus blocks marked for deep work, Monday opening with the note-taking instructions), and a radar query, no plugin, lists my own open actions by the owner suffix. Capture first, refine later: this structure is what lets the AI skills downstream find anything at all.",
+   "related": [
+    "eventing",
+    "framing",
+    "timesheet"
+   ],
+   "x": 69,
+   "y": 285
+  },
+  {
+   "id": "ledger",
+   "title": "Time ledger",
+   "lens": "wow",
+   "hook": "One code links where my time went and what knowledge came out.",
+   "what": "I book my time on a chart of accounts, the way a bookkeeper would, and I tag notes with the same codes. Because one code carries both, I can see per responsibility how much time goes in and what comes out, and, more importantly, when the two diverge: many meetings and no notes usually means talking without capturing.",
+   "how": "The measurement exists on three scales: a section in every day note, one in every week note and, since this week, one for a full quarterly cycle. The last one is the sharpest: only over a quarter does it show that a responsibility with an explicit target sat at zero.",
+   "related": [
+    "distill",
+    "agents",
+    "archimate"
+   ],
+   "x": 158,
+   "y": 50
+  },
+  {
+   "id": "localvault",
+   "title": "What has no counterpart in the cloud suite",
+   "lens": "wow",
+   "hook": "I set out to prove three things Microsoft 365 cannot do with my notes; a fact-check left me with one, the most boring one.",
+   "what": "A local Markdown vault has four properties worth comparing with an enterprise cloud suite: open files, links and backlinks, git history, and being addressable by an agent. I set out to show that three of them had no counterpart. A fact-check against the vendor's own documentation confirmed one claim verbatim and revised two, leaving exactly one: local storage with git history.",
+   "how": "The comparison lives as a seven-row table in a blog draft, and the fact-check ran through the vendor's documentation server from inside the writing session. What turned out to be portable (the model, the skills, even a graph-like view) makes no difference; the boring property is the one I cannot replace.",
+   "related": [
+    "agents",
+    "archimate",
+    "calm"
+   ],
+   "x": 67,
+   "y": 454
+  },
+  {
+   "id": "memory",
+   "title": "Layered memory model",
+   "lens": "ai",
+   "hook": "What the assistant should remember, and at which level.",
+   "what": "An AI assistant working on your own notes needs three kinds of memory: conventions that never change, project context that lasts weeks, and the session at hand. Mixing them is how an agent forgets a rule or drags stale context along. It matters because the shape of that memory decides whether you can trust the assistant with your real working context.",
+   "how": "I described the model in [my second post](post:beyond-the-chatbot): the rules live in a small set of instruction files, project context in the vault itself, and the session in the day note. Nothing is remembered by accident; what persists is written down where a human can read it.",
+   "post": "beyond-the-chatbot",
+   "related": [
+    "archimate",
+    "ledger",
+    "4dx"
+   ],
+   "x": 374,
+   "y": 107
+  },
+  {
+   "id": "metamodel",
+   "title": "Reverse-engineering your own architecture practice",
+   "lens": "arch",
+   "hook": "Before you can improve how architecture work flows you need a model of it: the information model and process model of your own way of working.",
+   "what": "Architecture deliverables (epics, features, solution intents, outlines) live scattered across a wiki, a backlog tool, an EA tool and a realisation register, and nobody can explain who produces what for whom. Reverse-engineering the practice into an information model and a process model makes the as-is discussable and a target evolution possible. It also sharpens the role: an architect across teams owns coherence, constraints and cross-boundary decisions, and trusts solution architects for module depth.",
+   "how": "With the enterprise architect and the business architect I started a mini-project in a textual modelling language: the current metamodel, a portfolio layer for the review board, and a gap analysis through the lens of the delivery way of working. The concrete first slice was the definition-of-done frames for documentation and configuration.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 491,
+   "y": 402
+  },
+  {
+   "id": "modelgate",
+   "title": "Which model, which effort, per step",
+   "lens": "ai",
+   "hook": "Playbooks carry a model and effort gate: a mid-effort model for batch execution, a heavier one for judgement, the heaviest only for the final verification in a fresh session.",
+   "what": "Not every step of a playbook deserves the same model. Mechanical batches run fine on a mid-effort model; semantic judgement wants a heavier one; the final verification wants the heaviest, in a fresh session that inherits nothing. Writing that choice into the playbook as a gate (stop on mismatch, check the effort) makes cost and quality a decision rather than a default.",
+   "how": "A reference note maps the official effort levels, every playbook table points to it, and the week-review playbook refuses to run on the wrong model. I once gave the same task to two models and logged both as a model experiment; the habit that stuck is stating the next phase's model and effort at the end of the current one.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 383,
+   "y": 337
+  },
+  {
+   "id": "nfr",
+   "title": "Response-time thresholds you can defend",
+   "lens": "arch",
+   "hook": "Four numbers in a spreadsheet become an architecture norm only once you tie them to interaction patterns, benchmark them, and separate the measurement definition from the norm.",
+   "what": "Non-functional requirements often start as a few numbers in a slide deck: some response-time thresholds, a list of latency demands, volumetrics whose justification has expired. They become a defensible norm only when each is tied to an interaction pattern (a screen, a batch, an event, an API call), benchmarked against industry standards, and split in two: the measurement definition, agreed among architects, and the norm itself, decided by the review board.",
+   "how": "I turned the spreadsheet into an indexed note with an expiry warning at the top instead of hidden in every slide, and drew one architecture view over the four interaction patterns to carry the discussion. The follow-up is a workshop on quality attribute scenarios: read beforehand, walk through examples, apply to your own case, get corrected.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 493,
+   "y": 345
+  },
+  {
+   "id": "objtree",
+   "title": "PI objectives as a priority tree",
+   "lens": "wow",
+   "hook": "Keep the lights on sits at the root; every feature must hang from an objective or explain why not.",
+   "what": "Planning objectives only steer when they are few and ordered. A priority tree puts keeping the lights on at priority zero, a handful of shared objectives underneath, one sub-objective per team, and features linked by relation rather than as children. Predictability is then measured on objectives, not features, because feature counts say nothing about the business value reached.",
+   "how": "I structured the planning note along the tree, proposed an objective-type work item with confidence, status and a dashboard roll-up, and helped set two rules: five objectives and no more, and nothing in stretch, only committed or backlog. The test per feature is simple: which objective does it serve, and if none, what is the story?",
+   "related": [
+    "code",
+    "distill",
+    "eventing"
+   ],
+   "x": 51,
+   "y": 395
+  },
+  {
+   "id": "openspec",
+   "title": "OpenSpec",
+   "lens": "ai",
+   "hook": "Write the spec, propose the change, let the agent build against it.",
+   "what": "[OpenSpec](https://openspec.dev) is a spec-driven workflow for AI-assisted development: requirements live as specs in the repository, every adjustment is a change proposal against those specs, and the coding agent implements and verifies against them rather than against a chat prompt. It matters because it puts intent, not conversation history, in charge.",
+   "how": "I ran a first trial on one small deliverable, a capacity spreadsheet generated from planning data, after a colleague showed me their setup. The open question I am tracking: does a change proposal earn its keep over simply editing the script? One data point is not proof, so the second deliverable decides.",
+   "related": [
+    "4dx",
+    "archimate",
+    "distill"
+   ],
+   "x": 277,
+   "y": 217
+  },
+  {
+   "id": "outline",
+   "title": "Solution outline granularity",
+   "lens": "arch",
+   "hook": "One outline per theme, not per feature. Aim for seven, give or take two.",
+   "what": "A solution outline is the design document that frames a slice of a solution before teams build it. The reflex is one per backlog feature, which produces as many documents as work items and repeats the same design decision five times over. Cluster on theme instead, and the count should land around seven, plus or minus two.",
+   "how": "The clusters are not free to choose: the conceptual information model points them out. Entities of the same kind (transactional, master data, reference data) around the same subject belong together. I distilled this from a planning debrief this week, and an empty information-architecture section in an outline is now a signal that the clustering is not grounded.",
+   "related": [
+    "agents",
+    "distill",
+    "framing"
+   ],
+   "x": 614,
+   "y": 110
+  },
+  {
+   "id": "para",
+   "title": "PARA",
+   "lens": "wow",
+   "hook": "Four folders, and a filing question that never goes stale.",
+   "what": "PARA (Projects, Areas, Resources, Archive) is Tiago Forte's way of organising notes by actionability rather than by subject. A project ends, an area is an ongoing responsibility, a resource is reference material, and the archive is where finished things rest. It matters because topic-based folders need reordering every quarter; responsibilities don't.",
+   "how": "It is the filing cabinet of my work vault. The twist I added: when a note lands, the question is not \"what is this about?\" but \"which hat forced it, the architect or the product owner, and which responsibility within that role?\". The same code then links the note to the time I booked on it.",
+   "related": [
+    "distill",
+    "agents",
+    "code"
+   ],
+   "x": 170,
+   "y": 111
+  },
+  {
+   "id": "phased",
+   "title": "The phased mini-project",
+   "lens": "ai",
+   "hook": "Every structural change to the vault runs as a mini-project: freeze a baseline, pass an approval gate, execute in batches, distil the rules, then let a fresh session verify against the baseline.",
+   "what": "Structural changes to a knowledge vault (renaming a convention, converting hundreds of bullets, deduplicating open points) are destructive batches. Running each as a small phased project gives them the protection of a migration: a frozen baseline with counts, an explicit approval gate before execution, batches, distilled rules, and a final verification by a fresh, independent session that recounts against the baseline.",
+   "how": "The skeleton is a hub with a tracker, status callouts and six phase sections, plus fields for phase and closure. I have run a dozen of these; the step that earned its keep is deferring verification to a new session so it cannot inherit the assumptions of the one that did the work. The cheapest gate sits before the project even exists: does the query actually work?",
+   "related": [
+    "4dx",
+    "archimate",
+    "distill"
+   ],
+   "x": 387,
+   "y": 229
+  },
+  {
+   "id": "pkmeval",
+   "title": "Auditing my own journal against PKM methods",
+   "lens": "wow",
+   "hook": "Strong on the time axis, weak on the knowledge axis: what a GTD, PARA, Zettelkasten and BASB audit of 258 pages of notes revealed.",
+   "what": "Before redesigning how you take notes, audit what you have. Profiling two hundred and fifty-eight pages of a notes export statistically (hundreds of question marks, zero decision labels, structure that does not survive the PDF export) and scoring it against GTD, PARA, Zettelkasten and Building a Second Brain gave a gap table: green on time tracking, yellow on tasks, red on everything that turns notes into knowledge.",
+   "how": "The audit produced a target architecture and an eight-week phased plan with one rule: no big-bang migration, start forward. A journaling map of contents bundles the template, the analyses, a two-hour mini-course on my own notes and five prompts into one semi-automated chain. My first day in the new vault was a working day on site, with my own notes.",
+   "related": [
+    "agents",
+    "code",
+    "commitgate"
+   ],
+   "x": 156,
+   "y": 399
+  },
+  {
+   "id": "playbooks",
+   "title": "Playbooks as the unit of delegation",
+   "lens": "ai",
+   "hook": "Write the runbook a human can follow; only around the fourth repetition does it earn the right to become a skill.",
+   "what": "A playbook is a runbook written for a human first: steps, checks, and the questions to ask when something does not match. Only then can an assistant run it, and only after it has proven itself a few times does it deserve to become a skill. Skip the runbook and you get automation nobody can audit; skip the repetitions and you get skills for work that never recurs.",
+   "how": "Some twenty playbooks share one hub with an auto-index, a template and a summary column so none is forgotten. Each gets its convention checks (every work-item reference typed and linked), an appendix of known transcription errors where relevant, and a reminder at the second use to revisit skill conversion at the fourth. Bugs are fixed in the source note first and only then extracted to the runtime.",
+   "related": [
+    "4dx",
+    "archimate",
+    "distill"
+   ],
+   "x": 387,
+   "y": 170
+  },
+  {
+   "id": "plugin",
+   "title": "Sharing your AI skills with colleagues",
+   "lens": "ai",
+   "hook": "The gate for sharing a skill is one thing you cannot do yourself: a colleague's assistant picking it up spontaneously.",
+   "what": "A skill that works for you is not yet shareable. Packaging it as a plugin raises three questions before any code: who is it for (you, colleagues, the public), where does the repository live, and is the maintenance cheaper than everyone keeping a copy. The acceptance test is out of your hands by design: a colleague's assistant has to pick the skill up unprompted and produce the same result.",
+   "how": "I inspected an existing open-source architecture plugin instead of guessing, and found hardcoded frameworks and a diagram notation I do not use, so I sketched a two-layer design: a generic method layer over a company-specific one. The first real test went to a colleague-architect as a zip, with three feedback points agreed upfront: environment test, spontaneous pickup or not, and the generated diagram.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 290,
+   "y": 395
+  },
+  {
+   "id": "sessionlog",
+   "title": "Logging every AI session in the daily note",
+   "lens": "ai",
+   "hook": "Each daily note ends with an auto-maintained list of that day's AI sessions: asked, done, left open, tagged as delegation, augmentation or sparring.",
+   "what": "Once an assistant does real work in your notes, the day note needs a record of it: what was asked, what was done, what stays open. Two labels per session (a category, and delegation versus augmentation versus sparring) turn the log into data about how I actually work with AI, not just an audit trail.",
+   "how": "A scheduled task writes the log section twice a day and never anything else; sessions still running are logged as such and picked up at the next run, and several sessions on one project collapse into one block with a line per phase. A coverage check against the raw transcripts came back at zero missed, which is the number that lets me trust it.",
+   "related": [
+    "4dx",
+    "archimate",
+    "distill"
+   ],
+   "x": 265,
+   "y": 276
+  },
+  {
+   "id": "skillroute",
+   "title": "Where an AI skill lives, and why two copies drift",
+   "lens": "ai",
+   "hook": "Every automation has the copy you document and the copy that runs; decide which one is the source before anything drifts.",
+   "what": "Every skill exists twice: as the note that documents it and as the runtime file the assistant executes. Add a third dimension, whether it runs locally, in the cloud or both, and drift becomes a matter of time. The design question is not how to sync but which copy is canonical and which route each skill needs.",
+   "how": "I settled on the vault as canonical knowledge, with runtime copies extracted from it and a drift check at session start; when four skills diverged because a session had patched the runtime directly, the fix was re-extraction, not rewriting. A route triage sorted skills into those that must read playbooks from disk and those that can stay cloud capabilities, and one thin local skill simply forwards to its account-level twin so the logic exists once.",
+   "related": [
+    "agents",
+    "archimate",
+    "eventing"
+   ],
+   "x": 371,
+   "y": 279
+  },
+  {
+   "id": "slice",
+   "title": "Publish a slice, not a summary",
+   "lens": "wow",
+   "hook": "Instead of writing a digest per audience, mark a shareable slice inside your working notes and let a publication plan decide which slice passes which gate.",
+   "what": "Every audience wants its own summary, and writing one per audience is how working notes and published pages drift apart. Publishing a slice inverts that: the shareable part is marked inside the working note itself, and a publication plan (audience by entry point by dossier by gate) decides which slice goes where and how often. Publishing becomes a cut from the work, not a digest beside it.",
+   "how": "Nine source notes got a section \"shareable outward\", five thin dossiers embed those slices per audience, and the heaviest dossier goes to the one audience that has to deliver something back, with a two-part intent test and a working definition of estimable. The blog follows the same idea one level up, as [the three-repository setup](post:tinkering-in-public).",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 165,
+   "y": 450
+  },
+  {
+   "id": "systems",
+   "title": "Systems thinking",
+   "lens": "arch",
+   "hook": "Why the same planning problem keeps coming back.",
+   "what": "Systems thinking traces a recurring problem to the feedback loops that keep it in place, rather than to the person who last touched it. Causal loop diagrams make those loops discussable: a reinforcing spiral here, a balancing loop that never closes there. It matters because a fix that ignores the loop gets undone by it.",
+   "how": "I used it to evaluate our latest planning cycle: a preparation spiral and a shifting-the-burden pattern where one person quietly absorbs a whole domain. Both now sit as diagrams in the evaluation, with the numbers that back them.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 612,
+   "y": 393
+  },
+  {
+   "id": "tasks",
+   "title": "Open tasks from four sources, one dashboard",
+   "lens": "wow",
+   "hook": "Inline action markers, escalated open points, checkbox tasks and backlog items land in one queryable dashboard, with a canonical-source rule so nothing is counted twice.",
+   "what": "Open work arrives through four channels: inline markers in day notes, escalated open points on a project hub, checkbox tasks, and items in the team backlog. Without one queryable view they are visible but never prioritised. The dashboard only works with a canonical-source rule: an open point lives in exactly one place and everything else links to it.",
+   "how": "I converted a baseline of some hundred and fifty open marker bullets to queryable task syntax in one retrofit, built a five-section dashboard split by owner and age, and added a third ordering next to source and gate: a lens per conversation partner, so I know before the day starts what to raise with whom. An efficiency review named the gap honestly: strong on single source of truth, weak on WIP control.",
+   "related": [
+    "4dx",
+    "archimate",
+    "distill"
+   ],
+   "x": 54,
+   "y": 343
+  },
+  {
+   "id": "testdata",
+   "title": "Pseudonymising test data across three systems",
+   "lens": "arch",
+   "hook": "Call it what it is, pseudonymisation, make the residual risk an explicit business acceptance, and expect a different carrier per system behind one uniform contract.",
+   "what": "Test environments need volume and representativeness, which means production-like data, which means personal data. Replacing identifiers is pseudonymisation, not anonymisation: a residual risk remains, and someone on the business side has to accept it explicitly, with the data protection officer in the loop. Pretending otherwise is the highest risk in the whole design.",
+   "how": "One orchestration engine, one uniform contract for the three source systems, and a different carrier behind each: a bulk pattern here, chunking inside the legacy database engine there, where the cost is the lifetime of the job rather than the technique. Drawing the solution view exposed what prose had hidden: three proposals in a row solved extraction and left the write-back silent. A technique I like: a home address becomes the town hall of the same municipality, so the geographic spread for dispatching survives.",
+   "related": [
+    "4dx",
+    "agents",
+    "archimate"
+   ],
+   "x": 596,
+   "y": 163
+  },
+  {
+   "id": "threerepos",
+   "title": "Blog as three repositories",
+   "lens": "wow",
+   "hook": "Work notes, blog kitchen, public site: three repos, one direction of flow.",
+   "what": "Writing about client work in public needs a firewall, not a promise. I keep three repositories: the private work vault, a private blog vault where drafts get generalised and anonymised, and the public site. Nothing moves to the site without a human check in between. It matters because the safest anonymisation is a structure that makes a leak a deliberate act.",
+   "how": "Set up in August: an Astro site on GitHub Pages, comments through GitHub Discussions, an RSS feed, and a written pipeline from series to post. Every hand-off is a conscious copy, never a sync.",
+   "post": "tinkering-in-public",
+   "related": [
+    "agents",
+    "archimate",
+    "eventing"
+   ],
+   "x": 167,
+   "y": 341
+  },
+  {
+   "id": "timesheet",
+   "title": "Timesheets by API, never the submit button",
+   "lens": "ai",
+   "hook": "Booking time is automated end to end; approving it stays a human act.",
+   "what": "My day notes carry a timed heading per activity, so the weekly timesheet can be derived: normalise each day to eight hours, park the surplus in an overtime balance, map every block to a work item. The automation is only worth it if the last step stays manual. Checking the day totals and pressing submit is where accountability lives, so no script may ever touch approval.",
+   "how": "An AI skill turns the day notes into a booking table, a script posts the blocks through the time-tracking tool's API and leaves a receipt, a second script rolls back by id, and a hard, unconditional block sits on every approval action. The lesson from the first production run was about readability: a comment that is a raw copy of a note title is useless to whoever reviews the sheet, so titles get an override.",
+   "related": [
+    "framing",
+    "distill",
+    "eventing"
+   ],
+   "x": 274,
+   "y": 108
+  },
+  {
+   "id": "toolchoice",
+   "title": "Chat assistant or coding agent for a knowledge vault?",
+   "lens": "ai",
+   "hook": "Measure before you switch, then run boundary tests on a throwaway vault before letting the agent near the real one.",
+   "what": "A chat assistant is low-threshold for working on local files; a coding agent is better at bulk edits, git and skills, and worse at connectors, logged-in browser sessions and visual iteration. The honest finding from comparing fifty-one finished sessions was that most vault work is tool-neutral, so the choice is per task and per device, not a conversion.",
+   "how": "I wrote a decision tree per device (the phone reaches the laptop over SSH), then ran a seven-phase experiment: a sandbox vault outside the sync folder, core tests including the notes app's command line, boundary tests for connectors and browser control, a gate, and only then rollout on the real vault with a backup. The underlying need was never speed; it was enough trust for long-term use.",
+   "related": [
+    "4dx",
+    "archimate",
+    "commitgate"
+   ],
+   "x": 277,
+   "y": 346
+  },
+  {
+   "id": "triggers",
+   "title": "Unattended triggers, human gate",
+   "lens": "ai",
+   "hook": "A scheduled agent may prepare and report; only I may write.",
+   "what": "Weekly routines are calendar-bound but used to wait for me to type them. A scheduled trigger can start them, yet it runs somewhere without my open notes app, its live index or its command line, while a local scheduler ties the work to one laptop. The clean split: the trigger produces a read-only report and ends with a recommendation; a human types the skill that writes.",
+   "how": "Three test runs (open the week, close the week, a risk path with a refresh) produced zero vault mutations and zero permission prompts, and found the gaps that matter: two calendars with the same name, a week note in another month's folder, a git status made unreliable by the quarter-hourly safety net. The same principle already governed my automatic session log: it records what ran, it never edits what I wrote.",
+   "related": [
+    "4dx",
+    "agents",
+    "distill"
+   ],
+   "x": 270,
+   "y": 161
+  },
+  {
+   "id": "vaultgit",
+   "title": "Git under a synced knowledge vault",
+   "lens": "wow",
+   "hook": "When several AI sessions write to your notes in one hour, one-writer discipline becomes a design choice: a quarter-hourly safety net, path-scoped restores, and git as the place where a human says yes.",
+   "what": "A notes vault that syncs across devices already has version history, but no reference point to diff against and no gate where a human approves a change. Once AI sessions write to it, several in the same hour, git stops being optional: it is the journal that makes a destructive batch reversible and the place where a remote session's work waits for a yes.",
+   "how": "A safety-net script commits everything every fifteen minutes; sessions themselves commit path-scoped and never run the destructive git verbs; restores go per file, guarded by a check that no other session is working in that folder. Work from a phone sandbox arrives on its own branch and follows a short playbook (fetch, diff, ask, merge, verify). It all grew out of dated rsync backups before every destructive batch.",
+   "related": [
+    "agents",
+    "archimate",
+    "distill"
+   ],
+   "x": 164,
+   "y": 277
+  },
+  {
+   "id": "weekscore",
+   "title": "Scoring the work week on five dimensions",
+   "lens": "wow",
+   "hook": "Focus, capacity, commitment, depth, sustainability: a 1 to 5 per week, backfilled seven weeks.",
+   "what": "A weekly score forces a verdict where a review would otherwise produce prose: focus on what matters most, capacity balance, commitment hygiene and predictability, professional depth versus coordination load, and sustainability. Each dimension has five level definitions, so the number is defensible and comparable week over week. The value is not the score but the one concrete action per weak dimension that the synthesis must end with.",
+   "how": "The grid lives as a playbook that the week-closing routine runs. I scored the current week and backfilled seven earlier weeks from their week notes to get a trend line, documenting every revised score so the evolution stays traceable. Commitment hygiene turned out to be the recurring weak spot, which is what pushed me towards the commitment gate.",
+   "related": [
+    "4dx",
+    "agents",
+    "distill"
+   ],
+   "x": 171,
+   "y": 218
+  }
+ ],
+ "weeks": {
+  "2026-W23": {
+   "eventing": 3,
+   "framing": 3,
+   "journal": 3,
+   "timesheet": 3,
+   "outline": 2,
+   "4dx": 1,
+   "agents": 1,
+   "archimate": 1,
+   "calm": 1,
+   "capabilities": 1,
+   "distill": 1,
+   "ledger": 1,
+   "openspec": 1,
+   "para": 1
+  },
+  "2026-W24": {
+   "agents": 3,
+   "code": 3,
+   "commitgate": 3,
+   "distill": 3,
+   "eventing": 3,
+   "framing": 3,
+   "journal": 3,
+   "outline": 3,
+   "para": 3,
+   "pkmeval": 3,
+   "timesheet": 3,
+   "4dx": 2,
+   "bigerd": 2,
+   "capabilities": 2,
+   "customgov": 2,
+   "flow": 2,
+   "objtree": 2,
+   "weekscore": 2,
+   "archimate": 1,
+   "ledger": 1,
+   "memory": 1,
+   "systems": 1,
+   "triggers": 1
+  },
+  "2026-W25": {
+   "code": 3,
+   "distill": 3,
+   "eventing": 3,
+   "framing": 3,
+   "objtree": 3,
+   "para": 3,
+   "timesheet": 3,
+   "4dx": 2,
+   "agents": 2,
+   "commitgate": 2,
+   "journal": 2,
+   "outline": 2,
+   "pkmeval": 2,
+   "weekscore": 2,
+   "bigerd": 1,
+   "calm": 1,
+   "customgov": 1,
+   "flow": 1,
+   "hygiene": 1,
+   "ledger": 1,
+   "triggers": 1
+  },
+  "2026-W26": {
+   "code": 3,
+   "distill": 3,
+   "eventing": 3,
+   "framing": 3,
+   "journal": 3,
+   "ledger": 3,
+   "para": 3,
+   "timesheet": 3,
+   "agents": 2,
+   "capabilities": 2,
+   "commitgate": 2,
+   "customgov": 2,
+   "outline": 2,
+   "4dx": 1,
+   "archimate": 1,
+   "bigerd": 1,
+   "flow": 1,
+   "objtree": 1,
+   "openspec": 1,
+   "weekscore": 1
+  },
+  "2026-W27": {
+   "ledger": 1,
+   "timesheet": 1
+  },
+  "2026-W28": {
+   "4dx": 2,
+   "archimate": 2,
+   "distill": 2,
+   "phased": 2,
+   "playbooks": 2,
+   "tasks": 2,
+   "commitgate": 1,
+   "hygiene": 1,
+   "ledger": 1,
+   "memory": 1,
+   "openspec": 1,
+   "para": 1,
+   "sessionlog": 1,
+   "timesheet": 1,
+   "toolchoice": 1
+  },
+  "2026-W29": {
+   "4dx": 3,
+   "agents": 3,
+   "archimate": 3,
+   "distill": 3,
+   "ledger": 3,
+   "phased": 3,
+   "playbooks": 3,
+   "tasks": 3,
+   "archsync": 2,
+   "code": 2,
+   "commitgate": 2,
+   "framing": 2,
+   "hygiene": 2,
+   "memory": 2,
+   "modelgate": 2,
+   "outline": 2,
+   "para": 2,
+   "sessionlog": 2,
+   "testdata": 2,
+   "timesheet": 2,
+   "toolchoice": 2,
+   "vaultgit": 2,
+   "eventing": 1,
+   "flow": 1,
+   "metamodel": 1,
+   "openspec": 1,
+   "triggers": 1
+  },
+  "2026-W30": {
+   "4dx": 3,
+   "agents": 3,
+   "archimate": 3,
+   "archsync": 3,
+   "distill": 3,
+   "ledger": 3,
+   "phased": 3,
+   "capabilities": 2,
+   "code": 2,
+   "commitgate": 2,
+   "eventing": 2,
+   "framing": 2,
+   "hygiene": 2,
+   "memory": 2,
+   "metamodel": 2,
+   "modelgate": 2,
+   "outline": 2,
+   "playbooks": 2,
+   "sessionlog": 2,
+   "tasks": 2,
+   "timesheet": 2,
+   "toolchoice": 2,
+   "triggers": 2,
+   "vaultgit": 2,
+   "openspec": 1,
+   "para": 1,
+   "weekscore": 1
+  },
+  "2026-W31": {
+   "agents": 3,
+   "archimate": 3,
+   "4dx": 2,
+   "distill": 2,
+   "flow": 2,
+   "framing": 2,
+   "hygiene": 2,
+   "testdata": 2,
+   "certainty": 1,
+   "code": 1,
+   "eventing": 1,
+   "ledger": 1,
+   "memory": 1,
+   "nfr": 1,
+   "outline": 1,
+   "para": 1,
+   "timesheet": 1,
+   "weekscore": 1
+  },
+  "2026-W32": {
+   "agents": 3,
+   "archimate": 3,
+   "code": 3,
+   "distill": 3,
+   "flow": 3,
+   "framing": 3,
+   "4dx": 2,
+   "certainty": 2,
+   "eventing": 2,
+   "hygiene": 2,
+   "ledger": 2,
+   "outline": 2,
+   "sessionlog": 2,
+   "skillroute": 2,
+   "slice": 2,
+   "vaultgit": 2,
+   "weekscore": 2,
+   "memory": 1,
+   "nfr": 1,
+   "para": 1,
+   "plugin": 1,
+   "testdata": 1,
+   "timesheet": 1,
+   "triggers": 1
+  },
+  "2026-W33": {
+   "4dx": 3,
+   "agents": 3,
+   "archimate": 3,
+   "distill": 3,
+   "flow": 3,
+   "framing": 3,
+   "plugin": 3,
+   "testdata": 3,
+   "code": 2,
+   "eventing": 2,
+   "hygiene": 2,
+   "ledger": 2,
+   "memory": 2,
+   "nfr": 2,
+   "outline": 2,
+   "skillroute": 2,
+   "tasks": 2,
+   "timesheet": 2,
+   "vaultgit": 2,
+   "weekscore": 2,
+   "commitgate": 1,
+   "para": 1,
+   "sessionlog": 1,
+   "triggers": 1
+  },
+  "2026-W34": {
+   "agents": 3,
+   "archimate": 3,
+   "archsync": 3,
+   "distill": 3,
+   "eventing": 3,
+   "flow": 3,
+   "framing": 3,
+   "ledger": 3,
+   "threerepos": 3,
+   "vaultgit": 3,
+   "4dx": 2,
+   "code": 2,
+   "commitgate": 2,
+   "hygiene": 2,
+   "outline": 2,
+   "para": 2,
+   "playbooks": 2,
+   "skillroute": 2,
+   "triggers": 2,
+   "memory": 1,
+   "timesheet": 1,
+   "weekscore": 1
+  },
+  "2026-W35": {
+   "agents": 3,
+   "archimate": 3,
+   "calm": 2,
+   "eventing": 2,
+   "ledger": 2,
+   "localvault": 2,
+   "memory": 2,
+   "skillroute": 2,
+   "threerepos": 2,
+   "4dx": 1,
+   "code": 1,
+   "distill": 1,
+   "hygiene": 1,
+   "openspec": 1,
+   "para": 1,
+   "triggers": 1
+  },
+  "2026-W36": {
+   "agents": 3,
+   "archimate": 3,
+   "distill": 3,
+   "framing": 3,
+   "4dx": 2,
+   "eventing": 2,
+   "ledger": 2,
+   "memory": 2,
+   "threerepos": 2,
+   "timesheet": 2,
+   "triggers": 2,
+   "calm": 1,
+   "flow": 1,
+   "hygiene": 1,
+   "para": 1,
+   "weekscore": 1
+  },
+  "2026-W37": {
+   "agents": 3,
+   "archimate": 3,
+   "distill": 3,
+   "4dx": 2,
+   "calm": 2,
+   "ledger": 2,
+   "openspec": 2,
+   "code": 1,
+   "outline": 1,
+   "para": 1,
+   "systems": 1
+  }
+ }
+}
