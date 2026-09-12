@@ -158,6 +158,10 @@ const latestNum = Number(latest.split('-W')[1]);
 			inst.mode = 'saved';
 			inst.idx = FORMS.findIndex((f) => f.id === pref);
 		}
+		/* a post can link to "the week this played in" via ?week=2026-W34;
+		   only the week changes, never the saved/default form */
+		const linkedWeek = new URLSearchParams(location.search).get('week');
+		if (linkedWeek && WEEK_KEYS.includes(linkedWeek)) inst.week = linkedWeek;
 		function resetWeekState(i) {
 			const list = weekTopics(i.week);
 			i.topics = list;
