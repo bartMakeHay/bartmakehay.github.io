@@ -2,13 +2,18 @@
 /**
  * Shared teaser dialog. Include once per page that uses <Topic> or <TopicExplorer>.
  * Topic data comes from src/data/topics.json, generated from the blog vault.
+ *
+ * The data ships once, as the JSON island below; this script and TopicExplorer's
+ * both read it from the DOM. With define:vars per component the same ~50 kB
+ * travelled twice on the home page.
  */
 import topicsData from '../data/topics.json';
 
-const topics = Object.fromEntries(topicsData.topics.map((t) => [t.id, t]));
-const lenses = topicsData.lenses;
-const weeks = topicsData.weeks;
+/* a literal </script> in the card text would close the block early */
+const topicsJson = JSON.stringify(topicsData).replace(/</g, '\\u003c');
 ---
+
+<script type="application/json" id="topics-data" is:inline set:html={topicsJson}></script>
 
 <dialog id="teaser-dialog" class="teaser" aria-labelledby="teaser-title">
 	<div class="teaser-body">
@@ -34,20 +39,47 @@ const weeks = topicsData.weeks;
 	</div>
 </dialog>
 
-<script is:inline define:vars={{ topics, lenses, weeks }}>
+<script is:inline>
 	(function () {
 		const dlg = document.getElementById('teaser-dialog');
 		if (!dlg || dlg.dataset.wired) return;
 		dlg.dataset.wired = '1';
 
+		const data = JSON.parse(document.getElementById('topics-data').textContent);
+		const topics = Object.fromEntries(data.topics.map((t) => [t.id, t]));
+		const lenses = data.lenses;
+		const weeks = data.weeks;
+
 		const weekKeys = Object.keys(weeks).sort();
 		const latest = weekKeys[weekKeys.length - 1];
 		const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		/* same convention as a blog post (Conventies.md §Haakjestekst): a "(...)" aside
+		   renders muted. Tags pass through untouched so a link inside a parenthetical
+		   still wraps — this only ever sees tags this file generates itself, never raw "<". */
+		const paren = (html) => {
+			let out = '', depth = 0, i = 0;
+			while (i < html.length) {
+				const ch = html[i];
+				if (ch === '<') {
+					const end = html.indexOf('>', i);
+					out += end === -1 ? html.slice(i) : html.slice(i, end + 1);
+					i = end === -1 ? html.length : end + 1;
+					continue;
+				}
+				if (ch === '(') { if (depth === 0) out += '<span class="text-aside">'; depth++; }
+				out += ch;
+				if (ch === ')' && depth > 0) { depth--; if (depth === 0) out += '</span>'; }
+				i++;
+			}
+			return out;
+		};
 		/* the note text is markdown: internal post links and plain external links */
 		const md = (s) =>
-			esc(s)
-				.replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>')
-				.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (m, txt, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>');
+			paren(
+				esc(s)
+					.replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>')
+					.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (m, txt, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>')
+			);
 		const dots = (w) =>
 			'<span class="dots" aria-hidden="true">' + [1, 2, 3].map((i) => '<i class="' + (i <= w ? 'on' : '') + '"></i>').join('') + '</span>';
 		const weekNum = (key) => Number(key.split('-W')[1]);

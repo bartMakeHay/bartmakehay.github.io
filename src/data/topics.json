@@ -1,6 +1,6 @@
 {
  "generated": "90_Meta/scripts/teasers-naar-topics-json.py",
- "mapMax": 15,
+ "mapMax": 30,
  "lenses": {
   "wow": {
    "label": "Ways of working",

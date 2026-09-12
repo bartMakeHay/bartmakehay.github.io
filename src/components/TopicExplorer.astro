@@ -4,6 +4,8 @@
  *
  * Data: src/data/topics.json, generated from the blog vault
  * (90_Meta/scripts/teasers-naar-topics-json.py). Never edited here by hand.
+ * At runtime it comes from the JSON island that TeaserDialog ships, so the
+ * page carries one copy instead of one per component.
  *
  * Forms: Shuffle (default) · Map · Deck · Lenses, in a fixed carousel.
  * The chosen form is remembered in this browser under `bmh.explorer.view`.
@@ -13,7 +15,8 @@
 import topicsData from '../data/topics.json';
 import TeaserDialog from './TeaserDialog.astro';
 
-const { topics, lenses, weeks, mapMax } = topicsData;
+/* server-side, only for the noscript list; the rest is read from the island */
+const { topics, weeks } = topicsData;
 const byId = Object.fromEntries(topics.map((t) => [t.id, t]));
 const weekKeys = Object.keys(weeks).sort();
 const latest = weekKeys[weekKeys.length - 1];
@@ -35,11 +38,13 @@ const latestNum = Number(latest.split('-W')[1]);
 
 <TeaserDialog />
 
-<script is:inline define:vars={{ topics, lenses, weeks, mapMax }}>
+<script is:inline>
 	(function () {
 		const root = document.querySelector('[data-explorer]');
 		if (!root) return;
 
+		/* the island sits in TeaserDialog, rendered just above this script */
+		const { topics, lenses, weeks, mapMax } = JSON.parse(document.getElementById('topics-data').textContent);
 		const byId = Object.fromEntries(topics.map((t) => [t.id, t]));
 		const WEEK_KEYS = Object.keys(weeks).sort();
 		const LATEST = WEEK_KEYS[WEEK_KEYS.length - 1];
@@ -49,7 +54,8 @@ const latestNum = Number(latest.split('-W')[1]);
 			{ id: 'deck', label: 'Deck' },
 			{ id: 'lenses', label: 'Lenses' },
 		];
-		const DEFAULT_IDX = 0; /* Shuffle */
+		const DEFAULT_FORM = 'shuffle'; /* standaardvorm bij een eerste bezoek en na 'Forget saved view' */
+		const DEFAULT_IDX = FORMS.findIndex((f) => f.id === DEFAULT_FORM);
 		const KEY = 'bmh.explorer.view';
 
 		const readPref = () => {
@@ -69,11 +75,33 @@ const latestNum = Number(latest.split('-W')[1]);
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
 		const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		/* same convention as a blog post (Conventies.md §Haakjestekst): a "(...)" aside
+		   renders muted. Tags pass through untouched so a link inside a parenthetical
+		   still wraps — this only ever sees tags this file generates itself, never raw "<". */
+		const paren = (html) => {
+			let out = '', depth = 0, i = 0;
+			while (i < html.length) {
+				const ch = html[i];
+				if (ch === '<') {
+					const end = html.indexOf('>', i);
+					out += end === -1 ? html.slice(i) : html.slice(i, end + 1);
+					i = end === -1 ? html.length : end + 1;
+					continue;
+				}
+				if (ch === '(') { if (depth === 0) out += '<span class="text-aside">'; depth++; }
+				out += ch;
+				if (ch === ')' && depth > 0) { depth--; if (depth === 0) out += '</span>'; }
+				i++;
+			}
+			return out;
+		};
 		/* the note text is markdown: internal post links and plain external links */
 		const md = (s) =>
-			esc(s)
-				.replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>')
-				.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (m, txt, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>');
+			paren(
+				esc(s)
+					.replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>')
+					.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (m, txt, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>')
+			);
 		const dotsHtml = (w) =>
 			'<span class="dots" aria-hidden="true">' + [1, 2, 3].map((i) => '<i class="' + (i <= w ? 'on' : '') + '"></i>').join('') + '</span>';
 		const weekNum = (key) => Number(key.split('-W')[1]);
@@ -157,9 +185,11 @@ const latestNum = Number(latest.split('-W')[1]);
 			const swapped = form !== chosen;
 			const off = mapOff(i);
 
-			let head = '<p class="tx-kicker">What’s been on my mind lately</p>';
+			const kicker = '<p class="tx-kicker">What’s been on my mind lately</p>';
+
+			let tabsRow;
 			if (i.mode === 'choose') {
-				head +=
+				tabsRow =
 					'<div class="tx-nav"><button class="tx-chev" data-act="prev" aria-label="Previous view">' + CHEV_L + '</button>' +
 					'<div class="tx-tabs" role="tablist">' +
 					FORMS.map((f, n) =>
@@ -169,14 +199,18 @@ const latestNum = Number(latest.split('-W')[1]);
 					).join('') +
 					'</div><button class="tx-chev" data-act="next" aria-label="Next view">' + CHEV_R + '</button></div>';
 			} else {
-				head +=
+				tabsRow =
 					'<span class="tx-saved">Your view: <b>' + chosen.label + '</b>' +
 					(swapped ? ' · <span class="tx-swap">showing ' + form.label + ' this week, the map gets crowded above ' + mapMax + ' topics</span>' : '') +
 					' · <button class="tx-link" data-act="change">Change view</button></span>';
 			}
 
+			const weekIdx = WEEK_KEYS.indexOf(i.week);
 			const bar =
-				'<div class="tx-week"><span><b>Week ' + weekNum(i.week) + '</b> · ' + rangeLabel(i.week) + '</span>' +
+				'<div class="tx-week">' +
+				'<button class="tx-chev" data-act="week-prev" aria-label="Previous week"' + (weekIdx <= 0 ? ' disabled' : '') + '>' + CHEV_L + '</button>' +
+				'<span><b>Week ' + weekNum(i.week) + '</b> · ' + rangeLabel(i.week) + '</span>' +
+				'<button class="tx-chev" data-act="week-next" aria-label="Next week"' + (weekIdx >= WEEK_KEYS.length - 1 ? ' disabled' : '') + '>' + CHEV_R + '</button>' +
 				'<span class="sep">|</span><button class="tx-link" data-act="pick" aria-expanded="' + i.pick + '">' + CAL + (i.pick ? 'Close' : 'Other week') + '</button>' +
 				(i.week !== LATEST ? '<span class="sep">·</span><button class="tx-link" data-act="latest">Latest</button>' : '') +
 				'</div>';
@@ -195,8 +229,10 @@ const latestNum = Number(latest.split('-W')[1]);
 			}
 
 			i.root.innerHTML =
-				'<div class="tx-head">' + head + '</div>' + bar + (i.pick ? calendar(i) : '') +
-				'<div class="tx-panel" data-form="' + form.id + '"></div>' + foot;
+				'<div class="tx-toprow">' + kicker + bar + '</div>' +
+				(i.pick ? calendar(i) : '') +
+				'<div class="tx-formrow">' + tabsRow + '</div>' + foot +
+				'<div class="tx-panel" data-form="' + form.id + '"></div>';
 
 			const panel = i.root.querySelector('.tx-panel');
 			({ shuffle: renderShuffle, map: renderMap, deck: renderDeck, lenses: renderLenses })[form.id](panel, i);
@@ -232,6 +268,12 @@ const latestNum = Number(latest.split('-W')[1]);
 					i.week = LATEST; resetWeekState(i); render(i);
 				} else if (act === 'week') {
 					i.week = b.dataset.week; i.pick = false; resetWeekState(i);
+					if (!available(i, FORMS[i.idx]) && i.mode === 'choose') i.idx = FORMS.findIndex((f) => f.id === 'lenses');
+					render(i);
+				} else if (act === 'week-prev' || act === 'week-next') {
+					const idx = WEEK_KEYS.indexOf(i.week) + (act === 'week-prev' ? -1 : 1);
+					if (idx < 0 || idx >= WEEK_KEYS.length) return;
+					i.week = WEEK_KEYS[idx]; i.pick = false; resetWeekState(i);
 					if (!available(i, FORMS[i.idx]) && i.mode === 'choose') i.idx = FORMS.findIndex((f) => f.id === 'lenses');
 					render(i);
 				}
@@ -314,44 +356,158 @@ const latestNum = Number(latest.split('-W')[1]);
 			};
 		}
 
+		/* ---- map layout: pluggable, see MAP_LAYOUTS below ----
+		 * Contract: fn(nodes, edges, w, h) -> { [nodeId]: {x, y, r} }.
+		 * nodes: [{id, w: weight 1-3}], edges: [[idA, idB], ...]. The
+		 * layout owns node radius r too, since it may need to shrink dots
+		 * to keep everything overlap-free at higher topic counts.
+		 * Swapping the algorithm later = add a function here and flip
+		 * ACTIVE_MAP_LAYOUT; renderMap never needs to change. */
+		function seeded(str) {
+			let h = 0;
+			for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+			return () => {
+				h = (h * 1103515245 + 12345) & 0x7fffffff;
+				return h / 0x7fffffff;
+			};
+		}
+		function forceLayout(nodes, edges, W, H) {
+			const n = nodes.length;
+			const pos = {};
+			if (n === 0) return pos;
+			const rand = seeded(nodes.map((t) => t.id).join('|'));
+			const spread = Math.min(W, H) * 0.32;
+			nodes.forEach((t, idx) => {
+				const a = (idx / n) * Math.PI * 2 + rand() * 0.6;
+				pos[t.id] = { x: W / 2 + Math.cos(a) * spread * (0.3 + rand() * 0.7), y: H / 2 + Math.sin(a) * spread * (0.3 + rand() * 0.7) };
+			});
+			const rad = Object.fromEntries(nodes.map((t) => [t.id, 13 + t.w * 5]));
+			const idealLen = spread;
+			const STEPS = 300;
+			for (let step = 0; step < STEPS; step++) {
+				const cool = 1 - step / STEPS;
+				const disp = Object.fromEntries(nodes.map((t) => [t.id, { x: 0, y: 0 }]));
+				for (let a = 0; a < n; a++) {
+					for (let b = a + 1; b < n; b++) {
+						const A = nodes[a], B = nodes[b];
+						const dx = pos[A.id].x - pos[B.id].x, dy = pos[A.id].y - pos[B.id].y;
+						const d = Math.hypot(dx, dy) || 0.01;
+						const min = rad[A.id] + rad[B.id] + 24;
+						const rep = (min * min) / d * 0.06;
+						const fx = (dx / d) * rep, fy = (dy / d) * rep;
+						disp[A.id].x += fx; disp[A.id].y += fy;
+						disp[B.id].x -= fx; disp[B.id].y -= fy;
+					}
+				}
+				edges.forEach(([aId, bId]) => {
+					const A = pos[aId], B = pos[bId];
+					const dx = B.x - A.x, dy = B.y - A.y;
+					const d = Math.hypot(dx, dy) || 0.01;
+					const f = (d - idealLen) * 0.02;
+					const fx = (dx / d) * f, fy = (dy / d) * f;
+					disp[aId].x += fx; disp[aId].y += fy;
+					disp[bId].x -= fx; disp[bId].y -= fy;
+				});
+				nodes.forEach((t) => {
+					disp[t.id].x += (W / 2 - pos[t.id].x) * 0.01;
+					disp[t.id].y += (H / 2 - pos[t.id].y) * 0.01;
+				});
+				nodes.forEach((t) => {
+					pos[t.id].x += disp[t.id].x * cool;
+					pos[t.id].y += disp[t.id].y * cool;
+				});
+			}
+			/* resolve remaining overlaps freely (unclamped — pinning to the
+			 * canvas mid-resolution is what caused corner-case stuck overlaps) */
+			for (let pass = 0; pass < 500; pass++) {
+				let moved = false;
+				for (let a = 0; a < n; a++) {
+					for (let b = a + 1; b < n; b++) {
+						const A = nodes[a], B = nodes[b];
+						const dx = pos[A.id].x - pos[B.id].x, dy = pos[A.id].y - pos[B.id].y;
+						const d = Math.hypot(dx, dy) || 0.01;
+						const min = rad[A.id] + rad[B.id] + 20;
+						if (d < min) {
+							moved = true;
+							const push = (min - d) / 2, ux = dx / d, uy = dy / d;
+							pos[A.id].x += ux * push; pos[A.id].y += uy * push;
+							pos[B.id].x -= ux * push; pos[B.id].y -= uy * push;
+						}
+					}
+				}
+				if (!moved) break;
+			}
+			/* scale the whole layout (positions AND radii) to fit the canvas —
+			 * shrinking node size along with spacing is what keeps busier
+			 * weeks overlap-free instead of just clamping dots into the wall */
+			let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+			nodes.forEach((t) => {
+				const r = rad[t.id];
+				minX = Math.min(minX, pos[t.id].x - r); maxX = Math.max(maxX, pos[t.id].x + r);
+				minY = Math.min(minY, pos[t.id].y - r); maxY = Math.max(maxY, pos[t.id].y + r);
+			});
+			const pad = 26;
+			const availW = W - pad * 2, availH = H - pad * 2 - 20; // extra room below for labels
+			const spanX = maxX - minX || 1, spanY = maxY - minY || 1;
+			const scale = Math.min(1, availW / spanX, availH / spanY);
+			const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+			const out = {};
+			nodes.forEach((t) => {
+				out[t.id] = {
+					x: W / 2 + (pos[t.id].x - cx) * scale,
+					y: H / 2 + (pos[t.id].y - cy) * scale,
+					r: rad[t.id] * scale,
+				};
+			});
+			return out;
+		}
+		const MAP_LAYOUTS = { force: forceLayout };
+		const ACTIVE_MAP_LAYOUT = 'force';
+		const computeMapLayout = (nodes, edges, w, h) => MAP_LAYOUTS[ACTIVE_MAP_LAYOUT](nodes, edges, w, h);
+
 		/* ---- form 2: map ---- */
 		function renderMap(panel, i) {
 			const NS = 'http://www.w3.org/2000/svg';
 			const list = i.topics;
 			const present = new Set(list.map((t) => t.id));
+			const W = 660, H = 540;
 			panel.innerHTML =
-				'<svg class="sky" viewBox="0 0 660 540" role="group" aria-label="Topic map"></svg>' +
-				'<p class="sky-hint">Bigger dots surfaced more often in week ' + weekNum(i.week) + '. Lines connect topics that show up together. Hover for neighbours, click to read.</p>';
+				'<svg class="sky" viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="Topic map"></svg>' +
+				'<p class="sky-hint">Bigger dots surfaced more often in week ' + weekNum(i.week) + '. Each topic is linked to the three topics it has most often shown up alongside, across all weeks. Hover for neighbours, click to read.</p>';
 			const svg = panel.querySelector('svg');
-			const edges = [], done = new Set(), nodes = {};
+			const edgeList = [], doneE = new Set();
 			list.forEach((t) =>
 				(t.related || []).forEach((r) => {
 					if (!present.has(r)) return;
 					const key = [t.id, r].sort().join('|');
-					if (done.has(key)) return;
-					done.add(key);
-					const l = document.createElementNS(NS, 'line');
-					const b = byId[r];
-					l.setAttribute('x1', t.x); l.setAttribute('y1', t.y - 10);
-					l.setAttribute('x2', b.x); l.setAttribute('y2', b.y - 10);
-					l.setAttribute('class', 'edge');
-					l.dataset.a = t.id; l.dataset.b = r;
-					svg.appendChild(l); edges.push(l);
+					if (doneE.has(key)) return;
+					doneE.add(key);
+					edgeList.push([t.id, r]);
 				})
 			);
+			const pos = computeMapLayout(list, edgeList, W, H);
+			const edges = [], nodes = {};
+			edgeList.forEach(([aId, bId]) => {
+				const l = document.createElementNS(NS, 'line');
+				l.setAttribute('x1', pos[aId].x); l.setAttribute('y1', pos[aId].y);
+				l.setAttribute('x2', pos[bId].x); l.setAttribute('y2', pos[bId].y);
+				l.setAttribute('class', 'edge');
+				l.dataset.a = aId; l.dataset.b = bId;
+				svg.appendChild(l); edges.push(l);
+			});
 			list.forEach((t) => {
-				const r = 13 + t.w * 5, cy = t.y - 10;
+				const { x, y: cy, r } = pos[t.id];
 				const g = document.createElementNS(NS, 'g');
 				g.setAttribute('class', 'node');
 				g.setAttribute('tabindex', '0');
 				g.setAttribute('role', 'button');
 				g.setAttribute('aria-label', t.title);
 				const c = document.createElementNS(NS, 'circle');
-				c.setAttribute('cx', t.x); c.setAttribute('cy', cy); c.setAttribute('r', r);
+				c.setAttribute('cx', x); c.setAttribute('cy', cy); c.setAttribute('r', r);
 				const ring = document.createElementNS(NS, 'circle');
-				ring.setAttribute('cx', t.x); ring.setAttribute('cy', cy); ring.setAttribute('r', r + 5); ring.setAttribute('class', 'ring');
+				ring.setAttribute('cx', x); ring.setAttribute('cy', cy); ring.setAttribute('r', r + 5); ring.setAttribute('class', 'ring');
 				const tx = document.createElementNS(NS, 'text');
-				tx.setAttribute('x', t.x); tx.setAttribute('y', cy + r + 14);
+				tx.setAttribute('x', x); tx.setAttribute('y', cy + r + 14);
 				tx.textContent = t.title;
 				g.appendChild(c); g.appendChild(ring); g.appendChild(tx);
 				svg.appendChild(g);
@@ -469,11 +625,16 @@ const latestNum = Number(latest.split('-W')[1]);
 <style is:global>
 	.tx { container-type: inline-size; display: grid; gap: 0.7rem; }
 	.tx-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; }
-	.tx-head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+	/* nowrap so the week-bar always sits in the same spot — varying content
+	   length ("· Latest" showing or not, a longer date range) must not decide
+	   whether this wraps; only the container-query breakpoint below does. */
+	.tx-toprow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: nowrap; }
+	.tx-formrow { display: flex; align-items: center; }
 	.tx-nav { display: flex; align-items: center; gap: 0.3rem; }
 	.tx-chev { border: 0; background: transparent; color: var(--color-aside); cursor: pointer; padding: 0.15rem; border-radius: 4px; display: inline-flex; }
 	.tx-chev svg { width: 15px; height: 15px; }
-	.tx-chev:hover { color: var(--color-ink); background: var(--color-hover); }
+	.tx-chev:hover:not(:disabled) { color: var(--color-ink); background: var(--color-hover); }
+	.tx-chev:disabled { color: var(--color-line); cursor: default; }
 	.tx-tabs { display: flex; gap: 0.15rem; }
 	.tx-tab { border: 0; background: transparent; padding: 0.25rem 0.5rem; border-radius: 999px; font: inherit; font-size: 0.78rem; font-weight: 500; color: var(--color-aside); display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
 	.tx-tab i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-line); display: inline-block; transition: background 0.15s, transform 0.15s; }
@@ -560,20 +721,23 @@ const latestNum = Number(latest.split('-W')[1]);
 	/* deck */
 	.dk { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; align-items: start; }
 	@container (max-width: 480px) { .dk { grid-template-columns: minmax(0, 1fr); } .sky .node text { font-size: 17px; } }
+	@container (max-width: 480px) { .tx-toprow { flex-direction: column; align-items: flex-start; flex-wrap: wrap; } }
 	.deck { position: relative; height: 11rem; perspective: 1000px; }
 	.deck .sc { position: absolute; inset: 0; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); }
 	.deck .sc.s1 { transform: translate(6px, 6px) rotate(1.5deg); }
 	.deck .sc.s2 { transform: translate(3px, 3px) rotate(-1deg); }
 	.flip { position: absolute; inset: 0; border: 0; background: transparent; padding: 0; transform-style: preserve-3d; transition: transform 0.4s; cursor: pointer; }
 	.flip.is-flipped { transform: rotateY(180deg); }
-	.face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.35rem; text-align: left; }
+	.face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.35rem; text-align: left; overflow: hidden; }
 	.face--back { background: var(--color-paper); align-items: center; justify-content: center; text-align: center; color: var(--color-muted); }
 	.face--back .b-mark { width: 40px; height: 40px; border-radius: 50%; background: var(--color-amber-soft); border: 1.5px solid var(--color-amber-dark); display: grid; place-items: center; color: var(--color-amber-dark); font-weight: 700; margin-bottom: 0.3rem; }
 	.face--back .b-title { font-weight: 600; color: var(--color-ink); }
 	.face--back .b-sub { font-size: 0.72rem; }
 	.face--front { background: var(--color-card); transform: rotateY(180deg); }
-	.face--front .t-title { font-size: 1rem; }
-	.face--front .t-hook { font-size: 0.84rem; }
+	/* fixed-height card (.deck) — a long title/hook must clip with an ellipsis
+	   instead of spilling out past the card edge */
+	.face--front .t-title { font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+	.face--front .t-hook { font-size: 0.84rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 	.face--front .t-cta { margin-top: auto; }
 	.dk-side { display: grid; gap: 0.8rem; }
 	.dk-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
