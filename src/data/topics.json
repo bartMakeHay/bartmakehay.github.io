@@ -21,7 +21,7 @@
    "title": "4DX",
    "lens": "wow",
    "hook": "Four disciplines to get the important thing done while the whirlwind rages.",
-   "what": "The 4 Disciplines of Execution is a recipe for delivering one wildly important goal while day-to-day work keeps pulling at you: pick the goal, act on lead measures you can influence, keep a visible scoreboard, and hold a short weekly cadence of accountability. It matters because most goals fail on execution, not on ambition.",
+   "what": "The [4 Disciplines of Execution](https://www.franklincovey.com/the-4-disciplines/) is a recipe for delivering one wildly important goal while day-to-day work keeps pulling at you: pick the goal, act on lead measures you can influence, keep a visible scoreboard, and hold a short weekly cadence of accountability. It matters because most goals fail on execution, not on ambition.",
    "how": "I mapped all four onto my notes vault: one goal per quarterly planning cycle, lead measures as fields in my weekly note, a scoreboard that computes itself from those fields, and a Friday review that closes the week. The honest part is a field that records whether the review actually happened.",
    "related": [
     "distill",
@@ -141,7 +141,7 @@
    "title": "CODE",
    "lens": "wow",
    "hook": "Capture, Organize, Distill, Express: the process that fills the cabinet.",
-   "what": "Where PARA is the cabinet, CODE is the workflow that moves knowledge through it: capture what resonates, organise it by actionability, distil it to its essence, and express it in something you make. The last step is the point: notes that never leave the vault are storage, not knowledge.",
+   "what": "Where PARA is the cabinet, [CODE](https://fortelabs.com/blog/basboverview/) is the workflow that moves knowledge through it: capture what resonates, organise it by actionability, distil it to its essence, and express it in something you make. The last step is the point: notes that never leave the vault are storage, not knowledge.",
    "how": "My days run through it almost literally. Meeting transcripts and raw notes are captured into the day note, organised onto a ledger code, distilled into decisions, actions and considerations at the end of the day, and expressed here, on this blog, once the client-specific detail has been removed.",
    "related": [
     "distill",
@@ -412,7 +412,7 @@
    "title": "PARA",
    "lens": "wow",
    "hook": "Four folders, and a filing question that never goes stale.",
-   "what": "PARA (Projects, Areas, Resources, Archive) is Tiago Forte's way of organising notes by actionability rather than by subject. A project ends, an area is an ongoing responsibility, a resource is reference material, and the archive is where finished things rest. It matters because topic-based folders need reordering every quarter; responsibilities don't.",
+   "what": "[PARA](https://fortelabs.com/blog/para/) (Projects, Areas, Resources, Archive) is Tiago Forte's way of organising notes by actionability rather than by subject. A project ends, an area is an ongoing responsibility, a resource is reference material, and the archive is where finished things rest. It matters because topic-based folders need reordering every quarter; responsibilities don't.",
    "how": "It is the filing cabinet of my work vault. The twist I added: when a note lands, the question is not \"what is this about?\" but \"which hat forced it, the architect or the product owner, and which responsibility within that role?\". The same code then links the note to the time I booked on it.",
    "related": [
     "distill",

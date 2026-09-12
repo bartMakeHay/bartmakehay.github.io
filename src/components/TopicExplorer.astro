@@ -69,8 +69,11 @@ const latestNum = Number(latest.split('-W')[1]);
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
 		const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		/* the note text is markdown: internal post links and plain external links */
 		const md = (s) =>
-			esc(s).replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>');
+			esc(s)
+				.replace(/\[([^\]]+)\]\(post:([a-z0-9-]+)\)/g, (m, txt, slug) => '<a href="/posts/' + slug + '/">' + txt + '</a>')
+				.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (m, txt, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>');
 		const dotsHtml = (w) =>
 			'<span class="dots" aria-hidden="true">' + [1, 2, 3].map((i) => '<i class="' + (i <= w ? 'on' : '') + '"></i>').join('') + '</span>';
 		const weekNum = (key) => Number(key.split('-W')[1]);
