@@ -18,6 +18,11 @@ const dialogId = `zoom-${src.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
 <style>
 	.zoomable-dialog {
+		/* Tailwind preflight zeroes margin, which breaks a native <dialog>'s
+		   centering — same fix as TeaserDialog's centering bug */
+		margin: auto;
+		position: fixed;
+		inset: 0;
 		max-width: 95vw;
 		max-height: 95vh;
 		padding: 0;

@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ZoomableImage from '../components/ZoomableImage.astro';
+
+const cards = [
+	{
+		eyebrow: 'Default',
+		title: 'Latest week, by default',
+		body: "The block always opens on the most recent week that has an overview. The week line reads something like “Week 37 · 7–13 Sep 2026” next to an “Other week” link.",
+	},
+	{
+		eyebrow: 'Calendar',
+		title: 'Picking another week',
+		body: "“Other week” opens a small calendar — month and year on top, ISO week numbers down the left, six rows so its height never jumps between months.",
+	},
+	{
+		eyebrow: 'Recognizable',
+		title: 'A weeknr dot means an overview',
+		body: 'Only weeks with a set of topics get a dot under their number and are clickable. Every other week stays grey and inert.',
+	},
+	{
+		eyebrow: 'Navigation',
+		title: 'Bounded months',
+		body: "The arrows don’t go back further than the first indexed month, or forward past the current one. “Latest” jumps straight back to now — the same idea as “Today” in a calendar app.",
+	},
+];
+
+const viewNotes = [
+	{ label: 'Shuffle & Deck', body: "count “of N” against that week’s own set of topics; drawn cards reset whenever you switch weeks." },
+	{ label: 'Map', body: 'only shows that week’s own topics, each at its usual spot; lines only connect topics that are actually present that week.' },
+	{ label: 'Lenses', body: 'shows a single line of text instead of tiles when a week is too small for a given lens.' },
+	{ label: 'A teaser card', body: 'reads “surfaced 3× in week 37” — and “another random topic” always stays within that same week.' },
+];
+---
+
+<Layout title="About the weekly topic list — bartmakehay" description="How the week picker and the four views of &ldquo;What&rsquo;s been on my mind lately&rdquo; work.">
+	<main class="mx-auto max-w-2xl px-4 py-8">
+		<p class="text-xs font-semibold tracking-wide text-accent uppercase">What&rsquo;s been on my mind lately</p>
+		<h1 class="mt-1 text-2xl font-bold text-ink">About the weekly topic list</h1>
+		<p class="mt-3 max-w-[60ch] text-sm text-muted">
+			A short explainer for the block on the front page — how the week picker works, what the four views do
+			differently on an older week, and what it actually means for a topic to show up in a given week.
+		</p>
+
+		<h2 class="mt-10 text-xs font-semibold tracking-wide text-aside uppercase">Navigating through Bart&rsquo;s weeks</h2>
+		<div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+			{cards.map((c) => (
+				<div class="rounded-lg border border-border bg-card p-4">
+					<p class="text-xs font-semibold tracking-wide text-accent uppercase">{c.eyebrow}</p>
+					<p class="mt-1 font-semibold text-ink">{c.title}</p>
+					<p class="mt-1.5 text-sm text-muted">{c.body}</p>
+				</div>
+			))}
+		</div>
+
+		<h2 class="mt-10 text-xs font-semibold tracking-wide text-aside uppercase">Four ways to consult a week&rsquo;s topics</h2>
+		<div class="mt-4 rounded-lg border border-border bg-card p-4">
+			<ul class="space-y-3 text-sm text-muted">
+				{viewNotes.map((n) => (
+					<li><b class="text-ink">{n.label}</b> {n.body}</li>
+				))}
+			</ul>
+		</div>
+
+		<h2 class="mt-10 text-xs font-semibold tracking-wide text-aside uppercase">What it means for a topic to show up in a week</h2>
+		<div class="mt-4 rounded-lg border border-border bg-card p-4">
+			<p class="text-sm text-muted">
+				A topic appears in a given week because it genuinely came up in my day-to-day working notes that week
+				— in a reflection, meeting minutes, or a stretch of actual work. The size of its dot is a rough read
+				on how often: surfaced once, a few times, or it ran through the whole week. It&rsquo;s an estimate made
+				when the card was written, not an exact count.
+			</p>
+		</div>
+
+		<h2 class="mt-10 text-xs font-semibold tracking-wide text-aside uppercase">How it all fits together</h2>
+		<div class="mt-4 rounded-lg border border-border bg-card p-4">
+			<p class="text-sm text-muted">
+				This is a small production chain, and a diagram carries it better than a paragraph would — an
+				architecture sketch (<a href="https://en.wikipedia.org/wiki/ArchiMate" class="text-accent hover:text-accent-hover">ArchiMate</a> notation) of
+				how a topic goes from something I noted for myself to a topic teaser in the weekly overview.
+			</p>
+			<!-- layout: Herziening v6 (op Barts vraag): richting van elke 'reads'-access omgedraaid
+			     volgens de ArchiMate-conventie voor het pijlpunt van een Access-relatie — bij Write
+			     wijst de pijl naar het object (zoals de drie 'writes'-relaties al deden), bij Read wijst
+			     ze terug naar het lezende gedrag. Deze generator tekent de pijlpunt altijd op 'naar',
+			     dus de drie reads kregen van/naar verwisseld: notes->routine (was routine->notes),
+			     teaser->generator (was generator->teaser), topicdata->website (was website->topicdata).
+			     Zuiver een relatie-richtingwissel, geen positiewijziging: dezelfde twee dozen, dezelfde
+			     lijn, enkel de pijlpunt draait om. Geometrie ongewijzigd (823x460, alle marges identiek
+			     aan v5). Meetregel: 823x460 · 8/8 lijnen in een dimensie · 0 kruisingen · 0 lijn-door-box
+			     · 0 overlappende dozen · 0 kind in de kopband · 0 kind buiten zijn ouder · 0 label dat
+			     zijn pijl afdekt · 0 label over een ander element · 0 route-overrides · 0 open
+			     EA-3-gevallen. -->
+			<div class="mt-4">
+				<ZoomableImage
+					src="/images/about-this-list/weekly-overview-pipeline.svg"
+					alt="Diagram: Bart both reflects on the working week (writing weekly working notes) and, separately, reviews and revises the topic teaser note; Claude Code — through a week-to-teasers routine that drafts the topic card — reads the working notes and writes that same topic teaser note; a topic-extraction script reads the teaser note and writes a topic data file; the blog website reads that file and its weekly topic overview service serves the Reader."
+				/>
+			</div>
+			<p class="mt-3 text-xs text-aside">
+				Legend of the stereotype icons (Business Actor, Business Process, Business Object, System
+				Software, Application Component, Application Function, Data Object, Application Service,
+				Business Role): <a href="https://www.opengroup.org/sites/default/files/docs/downloads/n221p.pdf" class="text-accent hover:text-accent-hover">ArchiMate® 3.2 Specification — Reference Cards</a> (free PDF) · <a href="https://pubs.opengroup.org/architecture/archimate32-doc/" class="text-accent hover:text-accent-hover">full ArchiMate® 3.2 Specification</a> (account required).
+			</p>
+			<p class="mt-1 text-xs text-aside">
+				Generated from a spec file, not hand-edited — same pipeline as the illustrations in my posts.
+			</p>
+			<ul class="mt-4 space-y-3 text-sm text-muted">
+				<li>The <b class="text-ink">drafting</b> step is where Claude Code actually helps: turning a loose note into a title, a hook and a sense of how often it came up — the routine that bundles this is the same one behind every card in this block.</li>
+				<li>Nothing ships on Claude Code&rsquo;s draft alone — I still <b class="text-ink">read and revise</b> every teaser note myself before it becomes a card.</li>
+				<li>The <b class="text-ink">topic-extraction script</b> is deliberately dumb by comparison — it just turns an already-drafted card into structured, per-week data. No judgment happens there.</li>
+				<li>The <b class="text-ink">topic data file</b> sits between the script and the website on purpose: it&rsquo;s the one thing both sides agree on, so either side can change without the other noticing.</li>
+				<li>Nothing here is live — the chain runs when I decide to refresh the list, not on every visit.</li>
+			</ul>
+		</div>
+
+		<p class="mt-10 text-sm">
+			<a href="/" class="font-semibold text-accent hover:text-accent-hover">&larr; Back to the front page</a>
+		</p>
+	</main>
+</Layout>

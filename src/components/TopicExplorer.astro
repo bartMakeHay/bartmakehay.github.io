@@ -26,7 +26,7 @@ const latestNum = Number(latest.split('-W')[1]);
 
 <section class="tx" data-explorer aria-label="What's been on my mind lately">
 	<noscript>
-		<p class="tx-kicker">What's been on my mind lately</p>
+		<a class="tx-kicker" href="/about-the-weekly-topic-list/">What's been on my mind lately →</a>
 		<p class="tx-nojs">Week {latestNum}, {latestTopics.length} topics.</p>
 		<ul class="tx-nojs-list">
 			{latestTopics.map((t) => (
@@ -189,7 +189,7 @@ const latestNum = Number(latest.split('-W')[1]);
 			const swapped = form !== chosen;
 			const off = mapOff(i);
 
-			const kicker = '<p class="tx-kicker">What’s been on my mind lately</p>';
+			const kicker = '<a class="tx-kicker" href="/about-the-weekly-topic-list/">What’s been on my mind lately →</a>';
 
 			let tabsRow;
 			if (i.mode === 'choose') {
@@ -628,7 +628,8 @@ const latestNum = Number(latest.split('-W')[1]);
 
 <style is:global>
 	.tx { container-type: inline-size; display: grid; gap: 0.7rem; }
-	.tx-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; white-space: nowrap; flex-shrink: 0; }
+	.tx-kicker { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin: 0; white-space: nowrap; flex-shrink: 0; text-decoration: none; }
+	.tx-kicker:hover { text-decoration: underline; color: var(--color-accent-hover); }
 	/* nowrap so the week-bar always sits in the same spot — varying content
 	   length ("· Latest" showing or not, a longer date range) must not decide
 	   whether this wraps; only the container-query breakpoint below does. */
@@ -658,7 +659,7 @@ const latestNum = Number(latest.split('-W')[1]);
 	/* nowrap + a fixed min-width sized to the longest realistic content
 	   (cross-month range + "Latest" link both present) — so the chevron
 	   always sits at the same spot, whatever a given week's label reads */
-	.tx-week { display: flex; align-items: center; gap: 0.5rem; flex-wrap: nowrap; flex-shrink: 0; min-width: 24.5rem; font-size: 0.78rem; color: var(--color-aside); }
+	.tx-week { display: flex; align-items: center; gap: 0.5rem; flex-wrap: nowrap; flex-shrink: 0; min-width: 23.5rem; font-size: 0.78rem; color: var(--color-aside); }
 	.tx-week b { color: var(--color-ink); }
 	.tx-week .sep { color: var(--color-line); }
 	.tx-panel { border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 1rem; }
